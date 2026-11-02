@@ -208,7 +208,9 @@ enum PageScript {
       };
 
       // Shows the site's player (with its controls and subtitles) over the
-      // whole page and hides the rest.
+      // whole page. The rest of the page stays as it is, only covered: sites
+      // check that their ad elements are still visible (an ad blocker hides
+      // them), so nothing else is hidden.
       const focus = () => {
         unfocus();
         focusedAt = Date.now();
@@ -222,11 +224,14 @@ enum PageScript {
         box.classList.add("cc-video-box");
         const style = document.createElement("style");
         style.id = "cc-focus-style";
+        // The player's ancestors go above everything else, and lose what would
+        // keep the player inside them (a transform makes "fixed" relative to it).
         style.textContent = `
-          html, body { overflow: hidden !important; background: #000 !important; }
-          .cc-video-ancestor > *:not(.cc-video-ancestor):not(.cc-video-box) { visibility: hidden !important; }
-          .cc-video-ancestor { transform: none !important; filter: none !important; contain: none !important;
-            will-change: auto !important; overflow: visible !important; perspective: none !important; }
+          .cc-video-ancestor { z-index: 2147483647 !important; transform: none !important; filter: none !important;
+            contain: none !important; will-change: auto !important; perspective: none !important; opacity: 1 !important;
+            isolation: auto !important; mix-blend-mode: normal !important; clip-path: none !important;
+            mask: none !important; overflow: visible !important; }
+          html.cc-video-ancestor, body.cc-video-ancestor { overflow: hidden !important; background: #000 !important; }
           .cc-video-box { position: fixed !important; inset: 0 !important; margin: 0 !important; padding: 0 !important;
             width: 100vw !important; height: 100vh !important; max-width: none !important; max-height: none !important;
             min-width: 0 !important; min-height: 0 !important; transform: none !important; border-radius: 0 !important;

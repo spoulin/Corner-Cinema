@@ -7,6 +7,8 @@ services in a WKWebView and moves that web view into an always-on-top mini playe
 
 - Never add a streaming site to the app by default: the user adds their own services.
 - Never skip, block or alter ads or DRM: ads are only muted, locally, then unmuted.
+- Never hide page elements to isolate the player: sites check that their bait ad elements
+  stay visible (Tubi shows "Please disable your ad-blocker"). The player is only put on top.
 - Keep `README.md` and `README.fr.md` in sync with user-visible changes.
 - Every new user-visible string gets a French value in `Resources/fr.lproj/Localizable.strings`.
 - Swift language mode 5 (see `Package.swift`); match the style of the neighbouring code.
