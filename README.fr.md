@@ -8,9 +8,8 @@ Lecteur vidéo pour macOS, pour ceux qui écoutent des films et des séries en t
 On ajoute les services de streaming auxquels on est abonné, on s'y connecte une fois, et on
 les regarde dans l'app.
 
-> **Réécriture en cours.** La version 0.1 (Swift + WebKit, tag `v0.1-webkit`) n'affichait pas
-> la vidéo quand DisplayLink est actif. La version 0.2 passe à Chromium avec Widevine
-> (Electron de castLabs). Le son coupé pendant les pubs revient à la prochaine étape.
+> La version 0.1 (Swift + WebKit, tag `v0.1-webkit`) n'affichait pas la vidéo quand DisplayLink
+> est actif. La version 0.2 passe à Chromium avec Widevine (Electron de castLabs).
 
 ## Utilisation
 
@@ -41,6 +40,36 @@ page passe dans une petite fenêtre flottante, sans s'arrêter.
 - *Réglages › Passer au mini lecteur quand je vais dans une autre app* désactive le passage automatique.
 - Les chaînes en direct (Pluto TV) repartent d'elles-mêmes après une pause : c'est le choix du site.
 
+## Pubs
+
+Pendant une pub, Corner Cinema coupe le son de la page, puis le remet quand le film revient.
+Votre propre réglage du son reste tel quel. Rien n'est sauté, bloqué ni modifié sur le site :
+la pub joue quand même, sans le son.
+
+- Une pub est reconnue, dans la page et dans chacun de ses cadres, par :
+  - son étiquette dans le lecteur (« Publicité 1 sur 2 », « Ad · 0:15 », « Advertisement »,
+    « Votre vidéo reprendra après la pub ») ;
+  - les classes qu'utilisent les lecteurs de pub courants (dont celui de YouTube) ;
+  - les cadres de serveurs de pub qui jouent une vidéo.
+- « Pub · son coupé » s'affiche dans la barre d'outils, et un instant sur le mini lecteur.
+- Une pub non reconnue : cliquer le mégaphone (ou ⌃⌥⌘A, ou clic droit dans le mini lecteur).
+  Le son reste coupé jusqu'au prochain clic, ou jusqu'à la page suivante.
+- Pour un service dont les pubs passent toujours : *Modifier › Avancé › Repère de pub*, un
+  sélecteur CSS d'un élément que le service n'affiche que pendant les pubs
+  (*Présentation › Outils de développement de la page* aide à le trouver).
+- *Réglages › Couper le son des pubs automatiquement* désactive ce comportement.
+
+## YouTube
+
+Les vidéos YouTube (`watch`, Shorts, `youtu.be`) jouent dans le lecteur intégrable de YouTube,
+en mode confidentialité (`youtube-nocookie.com`, comme le Duck Player de DuckDuckGo) : pas de
+cookies de suivi, pas de page autour de la vidéo, et l'API officielle du lecteur derrière les
+commandes. La navigation sur YouTube (accueil, recherche, chaînes) reste le site normal ; ⌘[ y
+revient.
+
+- Une vidéo qui ne peut pas jouer hors de YouTube (choix de son propriétaire) s'ouvre sur sa page normale.
+- YouTube Premium n'est pas reconnu dans ce lecteur : *Réglages › YouTube* garde la page normale.
+
 ### Raccourcis depuis n'importe quelle app
 
 | Action | Raccourci |
@@ -48,6 +77,7 @@ page passe dans une petite fenêtre flottante, sans s'arrêter.
 | Lecture / Pause | ⌃⌥⌘P |
 | Reculer / avancer de 10 secondes | ⌃⌥⌘J / ⌃⌥⌘L |
 | Couper / remettre le son | ⌃⌥⌘M |
+| C'est une pub (son coupé jusqu'au prochain appui) | ⌃⌥⌘A |
 | Verrouiller / déverrouiller le mini lecteur | ⌃⌥⌘T |
 | Afficher / masquer le mini lecteur | ⌃⌥⌘H |
 
@@ -96,10 +126,13 @@ dans l'app, et le module Widevine se télécharge depuis Google au premier lance
   `WebContentsView` sous la barre d'outils, dans une session gardée (`persist:services`). Elle pilote la vidéo.
 - `src/main/mini-player.js` : le panneau flottant où passe la page ; sa barre « son seulement »
   et ses messages sont dans `src/renderer/mini.*`.
-- `src/preload/page.js` : tourne dans chaque page de service, dans un monde que le site ne peut
-  ni voir ni appeler : trouve, décrit et pilote la vidéo principale, marque le lecteur du site et
-  déplace le mini lecteur quand on le glisse. `src/page/focus.css` affiche le lecteur seul. Rien
-  d'autre n'est caché dans la page (les sites vérifient que leurs éléments de pub restent visibles).
+- `src/preload/page.js` : tourne dans chaque page de service et dans chacun de ses cadres, dans un
+  monde que le site ne peut ni voir ni appeler : repère les pubs ; dans le cadre principal, trouve,
+  décrit et pilote la vidéo principale, marque le lecteur du site, déplace le mini lecteur quand on
+  le glisse et envoie les vidéos YouTube au lecteur confidentialité. `src/page/focus.css` affiche le
+  lecteur seul. Rien d'autre n'est caché dans la page (les sites vérifient que leurs éléments de
+  pub restent visibles).
+- `src/main/youtube.js` : les adresses YouTube et la page du lecteur confidentialité.
 - `src/main/store.js` : services, icônes et réglages, en JSON dans le dossier de l'app.
 - `src/main/displaylink.js` : savoir si DisplayLink est actif.
 - `src/renderer/` : la barre d'outils, l'accueil, l'éditeur de service et les réglages (HTML, sans framework).

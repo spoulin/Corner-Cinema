@@ -108,5 +108,17 @@
   "Another app already uses this shortcut": "Une autre app utilise déjà ce raccourci",
   "Drag the mini player from anywhere to move it. Escape brings the video back to the window; right-click for its options.": "Glissez le mini lecteur de n’importe où pour le déplacer. Échap ramène la vidéo dans la fenêtre ; clic droit pour ses options.",
   "Back to the Window (Esc)": "Revenir à la fenêtre (Échap)",
-  "Close (Pauses the Video)": "Fermer (met la vidéo en pause)"
+  "Close (Pauses the Video)": "Fermer (met la vidéo en pause)",
+  "Ad · muted": "Pub · son coupé",
+  "This Is an Ad": "C’est une pub",
+  "This Is an Ad (Mute Until Pressed Again)": "C’est une pub (son coupé jusqu’au prochain appui)",
+  "End of the ad: sound back on (⌃⌥⌘A)": "Fin de la pub : remettre le son (⌃⌥⌘A)",
+  "This is an ad: mute it (⌃⌥⌘A)": "C’est une pub : couper le son (⌃⌥⌘A)",
+  "Ads play without sound; the sound comes back with the film. If an ad slips through, click the megaphone (⌃⌥⌘A).": "Les pubs jouent sans le son ; le son revient avec le film. Si une pub passe quand même, cliquez sur le mégaphone (⌃⌥⌘A).",
+  "Ads": "Pubs",
+  "Mute ads automatically": "Couper le son des pubs automatiquement",
+  "The ad still plays, without sound, and the sound comes back with the video. Nothing is skipped or blocked. If an ad is not recognized, click the megaphone (⌃⌥⌘A).": "La pub joue quand même, sans le son, et le son revient avec la vidéo. Rien n’est sauté ni bloqué. Si une pub n’est pas reconnue, cliquez sur le mégaphone (⌃⌥⌘A).",
+  "YouTube": "YouTube",
+  "Play YouTube videos in YouTube's privacy player": "Lire les vidéos YouTube dans le lecteur confidentialité de YouTube",
+  "YouTube's embeddable player, without tracking cookies and without the page around it. YouTube Premium isn't recognized there; turn this off to keep the normal page.": "Le lecteur intégrable de YouTube, sans cookies de suivi et sans la page autour. YouTube Premium n’y est pas reconnu ; désactivez ce réglage pour garder la page normale."
 }

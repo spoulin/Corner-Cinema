@@ -24,6 +24,11 @@ function render({ settings, acceleration, shortcuts: list }) {
     checked: settings.autoMini,
     onchange: async event => render(await cc.setSettings({ autoMini: event.target.checked })),
   });
+  const checkbox = key => el("input", {
+    type: "checkbox",
+    checked: settings[key],
+    onchange: async event => render(await cc.setSettings({ [key]: event.target.checked })),
+  });
   const choice = el("select", {
     onchange: async event => render(await cc.setSettings({ hardwareAcceleration: event.target.value })),
   },
@@ -39,6 +44,14 @@ function render({ settings, acceleration, shortcuts: list }) {
       el("h2", {}, t("Mini Player")),
       el("label", { class: "row" }, el("span", {}, t("Switch to the mini player when I go to another app")), autoMini),
       el("p", { class: "caption" }, t("Only while a video is playing. The mini player stays on top of every app, on every desktop."))),
+    el("section", {},
+      el("h2", {}, t("Ads")),
+      el("label", { class: "row" }, el("span", {}, t("Mute ads automatically")), checkbox("muteAds")),
+      el("p", { class: "caption" }, t("The ad still plays, without sound, and the sound comes back with the video. Nothing is skipped or blocked. If an ad is not recognized, click the megaphone (⌃⌥⌘A)."))),
+    el("section", {},
+      el("h2", {}, t("YouTube")),
+      el("label", { class: "row" }, el("span", {}, t("Play YouTube videos in YouTube's privacy player")), checkbox("youtubePrivacyPlayer")),
+      el("p", { class: "caption" }, t("YouTube's embeddable player, without tracking cookies and without the page around it. YouTube Premium isn't recognized there; turn this off to keep the normal page."))),
     el("section", {},
       el("h2", {}, t("Shortcuts from any app")),
       shortcuts.map(shortcut => el("div", { class: "row shortcut" },

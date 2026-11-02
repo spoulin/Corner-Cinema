@@ -62,6 +62,10 @@ function renderToolbar() {
       el("span", {}, state.title || "")),
     el("div", { class: "spacer" }),
     displayLinkNotice(),
+    state.ad ? el("div", { class: "ad-badge" }, t("Ad · muted")) : null,
+    toolButton(state.manualAd ? "megaphoneOn" : "megaphone",
+      state.manualAd ? t("End of the ad: sound back on (⌃⌥⌘A)") : t("This is an ad: mute it (⌃⌥⌘A)"),
+      () => cc.player("ad")),
     toolButton("pip", t("Mini Player (⇧⌘M)"), () => cc.player("mini"),
       { disabled: !(state.video && state.video.has) && !state.mini, text: true }),
   );
@@ -145,6 +149,7 @@ function howItWorks() {
     t("Open it and sign in once: Corner Cinema remembers it."),
     t("Start a film, then click Mini Player, or simply switch to another app: the video stays on top, in a corner."),
     t("Drag the mini player from anywhere to move it. Escape brings the video back to the window; right-click for its options."),
+    t("Ads play without sound; the sound comes back with the film. If an ad slips through, click the megaphone (⌃⌥⌘A)."),
   ];
   return el("section", { class: "steps" },
     el("h3", {}, t("How it works")),

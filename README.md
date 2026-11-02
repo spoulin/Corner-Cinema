@@ -7,9 +7,8 @@
 A video player for macOS for people who watch films and series while they work.
 You add the streaming services you subscribe to, sign in once, and watch them in the app.
 
-> **Rewrite in progress.** Version 0.1 (Swift + WebKit, tag `v0.1-webkit`) showed no video
-> while DisplayLink runs. Version 0.2 moves to Chromium with Widevine (castLabs Electron).
-> Ad muting comes back in the next step.
+> Version 0.1 (Swift + WebKit, tag `v0.1-webkit`) showed no video while DisplayLink runs.
+> Version 0.2 moves to Chromium with Widevine (castLabs Electron).
 
 ## Use
 
@@ -39,6 +38,35 @@ moves to a small floating window, still playing.
 - *Settings › Switch to the mini player when I go to another app* turns the automatic switch off.
 - Live channels (Pluto TV) restart by themselves when paused: that is the site's choice.
 
+## Ads
+
+While an ad plays, Corner Cinema mutes the page, then gives the sound back when the film
+returns. Your own mute stays as you left it. Nothing is skipped, blocked or changed on the
+site: the ad still plays, without sound.
+
+- An ad is recognized, in the page and in each of its frames, by:
+  - its label in the player ("Ad 1 of 2", "Ad · 0:15", "Publicité", "Advertisement",
+    "Your video will resume after the ad");
+  - the classes common ad players use (YouTube's among them);
+  - frames from ad servers that play a video.
+- "Ad · muted" shows in the toolbar, and for a moment on the mini player.
+- An ad not recognized: click the megaphone (or ⌃⌥⌘A, or right-click in the mini player).
+  The sound stays off until you click again, or until the next page.
+- For a service whose ads are always missed: *Edit › Advanced › Ad marker*, a CSS selector
+  of an element the service shows only during ads (*View › Developer Tools for the Page*
+  helps to find one).
+- *Settings › Mute ads automatically* turns it off.
+
+## YouTube
+
+YouTube videos (`watch`, Shorts, `youtu.be`) play in YouTube's own embeddable player, in
+privacy mode (`youtube-nocookie.com`, as DuckDuckGo's Duck Player does): no tracking
+cookies, no page around the video, and the official player API behind the controls.
+Browsing YouTube (home, search, channels) stays the normal site; ⌘[ goes back to it.
+
+- A video that can't play outside YouTube (its owner's choice) opens on its normal page.
+- YouTube Premium isn't recognized in this player: *Settings › YouTube* keeps the normal page.
+
 ### Shortcuts from any app
 
 | Action | Shortcut |
@@ -46,6 +74,7 @@ moves to a small floating window, still playing.
 | Play / Pause | ⌃⌥⌘P |
 | Back / forward 10 seconds | ⌃⌥⌘J / ⌃⌥⌘L |
 | Mute / unmute | ⌃⌥⌘M |
+| This is an ad (mute until pressed again) | ⌃⌥⌘A |
 | Lock / unlock the mini player | ⌃⌥⌘T |
 | Show / hide the mini player | ⌃⌥⌘H |
 
@@ -94,10 +123,12 @@ Widevine module downloads from Google at first launch.
   under the toolbar, in a persistent session (`persist:services`). It drives the video.
 - `src/main/mini-player.js`: the floating panel the page moves into; its audio-only bar and
   messages are `src/renderer/mini.*`.
-- `src/preload/page.js`: runs in each service page, in a world the site can't see or call:
-  finds, reports and drives the main video, marks the site's player and moves the mini
-  player when dragged. `src/page/focus.css` shows the player alone. Nothing else in the
-  page is hidden (sites check that their ad elements stay visible).
+- `src/preload/page.js`: runs in each service page and each of its frames, in a world the
+  site can't see or call: spots ads; in the top frame, finds, reports and drives the main
+  video, marks the site's player, moves the mini player when dragged and sends YouTube
+  videos to the privacy player. `src/page/focus.css` shows the player alone. Nothing else
+  in the page is hidden (sites check that their ad elements stay visible).
+- `src/main/youtube.js`: YouTube addresses and the privacy player page.
 - `src/main/store.js`: services, icons and settings, as JSON in the app's data folder.
 - `src/main/displaylink.js`: whether DisplayLink runs.
 - `src/renderer/`: the toolbar, home screen, service editor and settings (HTML, no framework).

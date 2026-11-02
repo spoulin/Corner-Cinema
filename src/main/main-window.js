@@ -6,6 +6,7 @@ const store = require("./store");
 const urls = require("../shared/urls");
 const { t } = require("./i18n");
 const { MiniPlayer } = require("./mini-player");
+const youtube = require("./youtube");
 
 const TOOLBAR_HEIGHT = 52;
 /** The services' cookies and storage, kept between launches: the user signs in once. */
@@ -37,6 +38,12 @@ class MainWindow {
     this.video = NO_VIDEO;
     this.htmlFullScreen = false;
     this.mini = new MiniPlayer({ preload, player: this });
+    /** The listener's own mute, and the ad state of each frame that reported one. */
+    this.userMuted = false;
+    this.adFrames = new Map();
+    this.manualAd = false;
+    this.adMuted = false;
+    setInterval(() => this.expireAdFrames(), 1000);
 
     this.window = new BrowserWindow({
       width: 1100,
@@ -79,6 +86,8 @@ class MainWindow {
       webPreferences: {
         partition: PARTITION,
         preload: PAGE_PRELOAD,
+        // The preload also runs in frames: ads often play in one.
+        nodeIntegrationInSubFrames: true,
         contextIsolation: true,
         sandbox: true,
         backgroundThrottling: false,
@@ -100,10 +109,41 @@ class MainWindow {
       error: null,
       mini: false,
       video: { has: false, p: false },
+      ad: false,
+      manualAd: false,
     };
+    this.userMuted = false;
+    this.resetAds();
     this.layout();
     this.send();
-    view.webContents.loadURL(url);
+    this.load(url);
+  }
+
+  /** Loads a page, or a YouTube video in the privacy player. */
+  load(url) {
+    const contents = this.page.webContents;
+    const id = youtube.videoID(url);
+    if (id && this.usesYouTubePlayer(id)) this.openYouTube(id);
+    else contents.loadURL(url);
+  }
+
+  usesYouTubePlayer(id) {
+    return store.settings().youtubePrivacyPlayer && id !== this.youtubeFallback
+      && Date.now() - (this.historyNavigationAt || 0) > 2000;
+  }
+
+  openYouTube(id) {
+    if (!this.page) return;
+    this.youtubeVideo = id;
+    const language = (app.getPreferredSystemLanguages()[0] || "en").split("-")[0];
+    youtube.loadPlayer(this.page.webContents, id, language).catch(() => {});
+  }
+
+  /** The video can't play outside YouTube (its owner's choice): the normal page. */
+  youtubeFailed(id) {
+    if (!this.page || this.youtubeFallback === id) return;
+    this.youtubeFallback = id;
+    this.page.webContents.loadURL(youtube.watchURL(id));
   }
 
   /** Back to the services: the page and what plays in it stop. */
@@ -119,6 +159,8 @@ class MainWindow {
     const contents = this.page && this.page.webContents;
     if (action === "home") return this.goHome();
     if (!contents) return;
+    // Going back to a YouTube video opens its page as it was, not the player again.
+    if (action === "back" || action === "forward") this.historyNavigationAt = Date.now();
     if (action === "back" && contents.navigationHistory.canGoBack()) contents.navigationHistory.goBack();
     if (action === "forward" && contents.navigationHistory.canGoForward()) contents.navigationHistory.goForward();
     if (action === "reload") {
@@ -194,7 +236,23 @@ class MainWindow {
       }
       history();
     });
-    contents.on("did-navigate-in-page", history);
+    contents.on("did-navigate-in-page", (_event, url, isMainFrame) => {
+      // YouTube changes pages without loading them: a video that starts anyway goes to the player.
+      const id = isMainFrame && youtube.videoID(url);
+      if (id && this.usesYouTubePlayer(id)) return this.openYouTube(id);
+      history();
+    });
+    contents.on("will-navigate", event => {
+      const id = event.isMainFrame && youtube.videoID(event.url);
+      if (id && this.usesYouTubePlayer(id)) {
+        event.preventDefault();
+        this.openYouTube(id);
+      }
+    });
+    contents.on("did-start-navigation", event => {
+      // A new page: its frames will report their ads again.
+      if (event.isMainFrame && !event.isSameDocument) this.resetAds();
+    });
     contents.on("did-start-loading", () => this.update({ loading: true, error: null }));
     contents.on("did-stop-loading", () => this.update({ loading: false }));
     contents.on("page-title-updated", (_event, title) => this.update({ title }));
@@ -203,6 +261,12 @@ class MainWindow {
       if (!isMainFrame || code === -3) return;
       this.update({ error: description || String(code), loading: false });
     });
+    // Development: the preload's notes ("[cc] …") in the terminal.
+    if (!app.isPackaged) {
+      contents.on("console-message", event => {
+        if (String(event.message).startsWith("[cc]")) console.log(event.message);
+      });
+    }
     contents.on("did-finish-load", () => {
       // A new page in the mini player (next episode): isolate its player too.
       if (this.mini.isOpen) this.isolatePlayer(true);
@@ -235,6 +299,10 @@ class MainWindow {
   receiveVideo(contents, video) {
     if (!this.page || contents !== this.page.webContents || !video) return;
     this.video = video;
+    // 101, 150, 153: the video can't play in an embedded player.
+    if (video.youtubeError && [101, 150, 152, 153].includes(video.youtubeError) && this.youtubeVideo) {
+      this.youtubeFailed(this.youtubeVideo);
+    }
     const summary = { has: video.has, p: video.p };
     if (summary.has !== this.state.video.has || summary.p !== this.state.video.p) this.update({ video: summary });
     if (this.mini.isOpen) this.mini.update(video);
@@ -267,7 +335,7 @@ class MainWindow {
   }
 
   isMuted() {
-    return !!this.page && this.page.webContents.isAudioMuted();
+    return this.userMuted;
   }
 
   togglePlayPause() {
@@ -286,11 +354,61 @@ class MainWindow {
     if (this.canSeek()) this.run("seek", Number(seconds));
   }
 
-  /** The listener's own mute, for the whole page. */
+  /** The listener's own mute, for the whole page. It stays after an ad. */
   toggleMute() {
     if (!this.page) return;
-    this.page.webContents.setAudioMuted(!this.page.webContents.isAudioMuted());
+    this.userMuted = !this.userMuted;
+    this.updateAudio();
     if (this.mini.isOpen) this.mini.send();
+  }
+
+  // MARK: Ads
+
+  /** A frame of the page says an ad is (or isn't) showing. */
+  receiveAd(frame, on) {
+    const page = this.page && this.page.webContents.mainFrame;
+    if (!page || !frame || !frame.top || frame.top.processId !== page.processId || frame.top.routingId !== page.routingId) return;
+    const key = `${frame.processId}:${frame.routingId}`;
+    if (on) this.adFrames.set(key, Date.now());
+    else this.adFrames.delete(key);
+    this.updateAudio();
+  }
+
+  /** A frame that stops reporting its ad (removed without a word) no longer counts. */
+  expireAdFrames() {
+    let changed = false;
+    for (const [key, seen] of this.adFrames) {
+      if (Date.now() - seen > 5000) {
+        this.adFrames.delete(key);
+        changed = true;
+      }
+    }
+    if (changed) this.updateAudio();
+  }
+
+  resetAds() {
+    this.adFrames.clear();
+    this.manualAd = false;
+    this.updateAudio();
+  }
+
+  /** "This is an ad": muted until said again (for ads the app doesn't spot). */
+  toggleManualAd() {
+    if (!this.page) return;
+    this.manualAd = !this.manualAd;
+    this.updateAudio();
+  }
+
+  /** The page is muted while an ad plays, or when the listener muted it. */
+  updateAudio() {
+    const adMuted = (this.adFrames.size > 0 && store.settings().muteAds) || this.manualAd;
+    if (this.page) this.page.webContents.setAudioMuted(this.userMuted || adMuted);
+    const started = adMuted && !this.adMuted;
+    this.adMuted = adMuted;
+    if (this.state.browsing && (this.state.ad !== adMuted || this.state.manualAd !== this.manualAd)) {
+      this.update({ ad: adMuted, manualAd: this.manualAd });
+    }
+    if (started && this.mini.isOpen) this.mini.flash(t("Ad · muted"));
   }
 
   // MARK: Mini player

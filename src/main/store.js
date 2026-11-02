@@ -15,6 +15,10 @@ const defaults = {
   miniOpacity: 1,
   /** Where the mini player was last left. */
   miniBounds: null,
+  /** Mute the page while an ad plays (it still plays), and give the sound back after. */
+  muteAds: true,
+  /** YouTube videos in YouTube's embeddable player, without cookies. */
+  youtubePrivacyPlayer: true,
 };
 
 function file(name) {

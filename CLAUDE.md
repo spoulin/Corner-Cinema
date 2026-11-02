@@ -34,5 +34,7 @@ DisplayLink runs, Chromium without hardware acceleration does.
   DevTools Protocol (`http://127.0.0.1:9333/json`) to evaluate scripts or take screenshots of
   the interface (`index.html`) and of the service page.
 - Video frames are not in screenshots.
+- In development, the page preload's notes (`console.debug("[cc] …")`, e.g. each ad detected
+  or ended) show in the terminal that runs Electron.
 - The dev app and the packaged app share their data (`~/Library/Application Support/Corner Cinema`):
   the user's own services live there.

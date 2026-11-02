@@ -135,6 +135,7 @@ const SHORTCUTS = [
   { key: "J", title: "Back 10 Seconds", run: () => main.skip(-10) },
   { key: "L", title: "Forward 10 Seconds", run: () => main.skip(10) },
   { key: "M", title: "Mute / Unmute", run: () => main.toggleMute() },
+  { key: "A", title: "This Is an Ad (Mute Until Pressed Again)", run: () => main.toggleManualAd() },
   { key: "T", title: "Lock / Unlock the Mini Player", run: () => main.mini.isOpen && main.mini.setLocked(!main.mini.locked) },
   { key: "H", title: "Show / Hide the Mini Player", run: () => (main.mini.isOpen ? main.mini.toggleHidden() : main.enterMini()) },
 ];
@@ -155,6 +156,7 @@ function player(action, value) {
     case "forward": return main.skip(10);
     case "seek": return main.seek(Number(value));
     case "mute": return main.toggleMute();
+    case "ad": return main.toggleManualAd();
     case "mini": return main.toggleMini();
     case "window": return main.leaveMini();
     case "close": return main.leaveMini({ pause: true });
@@ -238,7 +240,7 @@ function openSettings() {
   if (settingsWindow) return settingsWindow.focus();
   settingsWindow = new BrowserWindow({
     width: 540,
-    height: 720,
+    height: 860,
     resizable: false,
     minimizable: false,
     maximizable: false,
@@ -299,6 +301,7 @@ function buildMenu() {
         { label: t("Back 10 Seconds"), accelerator: "Control+Alt+Command+J", registerAccelerator: false, click: () => main.skip(-10) },
         { label: t("Forward 10 Seconds"), accelerator: "Control+Alt+Command+L", registerAccelerator: false, click: () => main.skip(10) },
         { label: t("Mute / Unmute"), accelerator: "Control+Alt+Command+M", registerAccelerator: false, click: () => main.toggleMute() },
+        { label: t("This Is an Ad"), accelerator: "Control+Alt+Command+A", registerAccelerator: false, click: () => main.toggleManualAd() },
         { type: "separator" },
         { label: t("Mini Player"), accelerator: "Shift+Cmd+M", click: () => main.toggleMini() },
         { label: t("Show / Hide the Mini Player"), accelerator: "Control+Alt+Command+H", registerAccelerator: false, click: () => main.mini.toggleHidden() },
@@ -376,6 +379,41 @@ ipcMain.handle("player", (_event, action, value) => player(action, value));
 
 // From the service page's preload: its video, and the mini player being dragged.
 ipcMain.on("cc:video", (event, video) => main && main.receiveVideo(event.sender, video));
+/** What the page's preload needs: the service's ad marker and the user's settings. */
+function pageConfig() {
+  const settings = store.settings();
+  return {
+    adSelector: main && main.service ? main.service.adSelector || "" : "",
+    muteAds: settings.muteAds,
+    youtube: settings.youtubePrivacyPlayer,
+  };
+}
+
+/** Settings changed: every frame of the open page gets them. */
+function sendPageConfig() {
+  if (!main || !main.page) return;
+  const config = pageConfig();
+  for (const frame of main.page.webContents.mainFrame.framesInSubtree) {
+    try {
+      frame.send("cc:config", config);
+    } catch {
+      // The frame went away.
+    }
+  }
+  main.updateAudio();
+}
+
+const fromPage = event => main && main.page && event.sender === main.page.webContents;
+
+ipcMain.on("cc:config", event => {
+  event.returnValue = fromPage(event) ? pageConfig() : {};
+});
+ipcMain.on("cc:ad", (event, on) => {
+  if (fromPage(event)) main.receiveAd(event.senderFrame, !!on);
+});
+ipcMain.on("cc:youtube", (event, id) => {
+  if (fromPage(event) && typeof id === "string" && /^[A-Za-z0-9_-]{6,20}$/.test(id)) main.openYouTube(id);
+});
 ipcMain.on("cc:escape", event => {
   if (main && main.mini.isOpen && main.page && event.sender === main.page.webContents) main.leaveMini();
 });
@@ -394,7 +432,10 @@ ipcMain.handle("settings:set", (_event, changes) => {
     store.updateSettings({ hardwareAcceleration: changes.hardwareAcceleration });
     sendAcceleration();
   }
-  if (changes && typeof changes.autoMini === "boolean") store.updateSettings({ autoMini: changes.autoMini });
+  for (const key of ["autoMini", "muteAds", "youtubePrivacyPlayer"]) {
+    if (changes && typeof changes[key] === "boolean") store.updateSettings({ [key]: changes[key] });
+  }
+  if (changes && ("muteAds" in changes || "youtubePrivacyPlayer" in changes)) sendPageConfig();
   return { settings: store.settings(), acceleration: acceleration() };
 });
 

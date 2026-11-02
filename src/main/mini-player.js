@@ -270,6 +270,8 @@ class MiniPlayer {
       { label: t("Back to the Window (Esc)"), click: () => this.player.leaveMini() },
       { label: t("Close (Pauses the Video)"), click: () => this.player.leaveMini({ pause: true }) },
       { type: "separator" },
+      { label: t("This Is an Ad"), type: "checkbox", checked: this.player.manualAd, click: () => this.player.toggleManualAd() },
+      { type: "separator" },
       {
         label: t("Opacity"),
         submenu: OPACITIES.map(value => ({
