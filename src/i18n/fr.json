@@ -137,5 +137,13 @@
   "Sound back on": "Son rétabli",
   "“This is an ad” mutes for": "« C’est une pub » coupe le son pendant",
   "Until pressed again": "Jusqu’au prochain appui",
-  "Sound back on now": "Remettre le son maintenant"
+  "Sound back on now": "Remettre le son maintenant",
+  "Music during ads": "Musique pendant les pubs",
+  "Choose…": "Choisir…",
+  "Listen": "Écouter",
+  "Choose a music file or folder": "Choisir un fichier ou un dossier de musique",
+  "While an ad plays without sound, this plays instead: a radio (a .pls or .m3u link, or its stream address), an audio file or a folder of music. Leave it empty for silence.": "Pendant qu’une pub joue sans le son, ceci joue à la place : une radio (un lien .pls ou .m3u, ou l’adresse de son flux), un fichier audio ou un dossier de musique. Laissez vide pour le silence.",
+  "Volume of the music": "Volume de la musique",
+  "Fades (music, and the film coming back)": "Fondus (la musique, et le retour du film)",
+  "None": "Aucun"
 }

@@ -6,6 +6,7 @@ const store = require("./store");
 const urls = require("../shared/urls");
 const { t } = require("./i18n");
 const { MiniPlayer } = require("./mini-player");
+const { Filler } = require("./filler");
 const youtube = require("./youtube");
 
 const TOOLBAR_HEIGHT = 52;
@@ -38,6 +39,8 @@ class MainWindow {
     this.video = NO_VIDEO;
     this.htmlFullScreen = false;
     this.mini = new MiniPlayer({ preload, player: this });
+    /** Music during ads (Settings). */
+    this.filler = new Filler();
     /** The listener's own mute, and the ad state of each frame that reported one. */
     this.userMuted = false;
     this.adFrames = new Map();
@@ -431,9 +434,27 @@ class MainWindow {
   /** The page is muted while an ad plays, or when the listener muted it. */
   updateAudio() {
     const adMuted = (this.adFrames.size > 0 && store.settings().muteAds) || this.manualAd;
-    if (this.page) this.page.webContents.setAudioMuted(this.userMuted || adMuted);
     const started = adMuted && !this.adMuted;
+    const ended = !adMuted && this.adMuted;
     this.adMuted = adMuted;
+    const fade = Math.round(Number(store.settings().adFadeSeconds) * 1000);
+    if (this.page && ended && !this.userMuted && fade > 0) {
+      // The film comes back in a fade: its videos start silent, then the sound is turned back on.
+      for (const frame of this.page.webContents.mainFrame.framesInSubtree) {
+        try {
+          frame.send("cc:fade-in", fade);
+        } catch {
+          // The frame went away.
+        }
+      }
+      setTimeout(() => {
+        if (this.page && !this.adMuted) this.page.webContents.setAudioMuted(this.userMuted);
+      }, 80);
+    } else if (this.page) {
+      this.page.webContents.setAudioMuted(this.userMuted || adMuted);
+    }
+    if (started) this.filler.start();
+    if (ended) this.filler.stop();
     const until = this.manualAd ? this.manualAdUntil || null : null;
     if (this.state.browsing && (this.state.ad !== adMuted || this.state.manualAd !== this.manualAd || this.state.adUntil !== until)) {
       // adUntil: when "This is an ad" gives the sound back (for the countdown).

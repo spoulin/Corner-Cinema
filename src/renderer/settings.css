@@ -13,3 +13,4 @@ select { font: inherit; padding: 3px 6px; border-radius: 6px; }
 .slider { display: flex; align-items: center; gap: 8px; }
 .slider input { width: 160px; }
 .slider .value { width: 44px; text-align: right; font-variant-numeric: tabular-nums; color: var(--secondary); }
+.source { flex: 1; font: 12px ui-monospace, Menlo, monospace; padding: 4px 6px; border-radius: 6px; border: 1px solid var(--line); background: var(--background); color: var(--text); user-select: text; }

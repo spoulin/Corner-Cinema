@@ -23,6 +23,8 @@ contextBridge.exposeInMainWorld("cc", {
   player: (action, value) => ipcRenderer.invoke("player", action, value),
   relaunch: () => ipcRenderer.invoke("relaunch"),
   signOutOfEverything: () => ipcRenderer.invoke("sign-out-all"),
+  previewFiller: () => ipcRenderer.invoke("filler:preview"),
+  chooseFiller: () => ipcRenderer.invoke("filler:choose"),
   on(channel, callback) {
     if (channels.includes(channel)) ipcRenderer.on(channel, (_event, value) => callback(value));
   },

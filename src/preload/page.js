@@ -170,6 +170,25 @@ window.addEventListener("pagehide", () => {
   if (adShown) ipcRenderer.send("cc:ad", false);
 });
 
+// The film comes back from an ad in a fade (every frame: YouTube's player is one).
+const fadeTargets = new WeakMap();
+ipcRenderer.on("cc:fade-in", (_event, ms) => {
+  console.debug(`[cc] fade-in ${ms} ms, ${videos().length} videos in ${location.host || "page"}`);
+  for (const video of videos()) {
+    const target = fadeTargets.has(video) ? fadeTargets.get(video) : video.volume;
+    fadeTargets.set(video, target);
+    video.volume = 0;
+    const start = Date.now();
+    const step = () => {
+      const progress = Math.min(1, (Date.now() - start) / ms);
+      video.volume = target * progress;
+      if (progress < 1) setTimeout(step, 40);
+      else fadeTargets.delete(video);
+    };
+    step();
+  }
+});
+
 // MARK: YouTube's privacy player (top frame)
 
 /** The page is Corner Cinema's YouTube player (see main/youtube.js). */

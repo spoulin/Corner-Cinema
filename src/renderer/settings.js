@@ -17,6 +17,51 @@ function el(tag, attributes = {}, ...children) {
 
 let shortcuts = [];
 
+/** Music during ads: a radio, a stream, a file or a folder, with its volume and fades. */
+function fillerSection(settings) {
+  const source = el("input", {
+    type: "text",
+    class: "source",
+    value: settings.adFillerSource || "",
+    placeholder: "https://somafm.com/illstreet.pls",
+    spellcheck: "false",
+    onchange: event => cc.setSettings({ adFillerSource: event.target.value }),
+  });
+  const percent = Math.round((settings.adFillerVolume ?? 0.7) * 100);
+  const volumeLabel = el("span", { class: "value" }, `${percent} %`);
+  const volume = el("input", {
+    type: "range", min: "5", max: "100", step: "5", value: String(percent),
+    oninput: event => {
+      volumeLabel.textContent = `${event.target.value} %`;
+      cc.setSettings({ adFillerVolume: Number(event.target.value) / 100 });
+    },
+  });
+  const fade = el("select", {
+    onchange: event => cc.setSettings({ adFadeSeconds: Number(event.target.value) }),
+  }, [[0, t("None")], [0.5, "0.5 s"], [1, "1 s"], [2, "2 s"], [3, "3 s"]].map(([value, label]) =>
+    el("option", { value: String(value), selected: Number(settings.adFadeSeconds) === value }, label)));
+  return el("section", {},
+    el("h2", {}, t("Music during ads")),
+    el("div", { class: "row" }, source,
+      el("button", {
+        onclick: async () => {
+          const chosen = await cc.chooseFiller();
+          if (!chosen) return;
+          source.value = chosen;
+          await cc.setSettings({ adFillerSource: chosen });
+        },
+      }, t("Choose…")),
+      el("button", {
+        onclick: async () => {
+          await cc.setSettings({ adFillerSource: source.value });
+          cc.previewFiller();
+        },
+      }, t("Listen"))),
+    el("p", { class: "caption" }, t("While an ad plays without sound, this plays instead: a radio (a .pls or .m3u link, or its stream address), an audio file or a folder of music. Leave it empty for silence.")),
+    el("div", { class: "row" }, el("span", {}, t("Volume of the music")), el("span", { class: "slider" }, volume, volumeLabel)),
+    el("div", { class: "row" }, el("span", {}, t("Fades (music, and the film coming back)")), fade));
+}
+
 /** A slider from 20 % to 100 %, applied to the mini player while it moves. */
 function opacityRow(value) {
   const percent = Math.round((value ?? 1) * 100);
@@ -74,6 +119,7 @@ function render({ settings, acceleration, shortcuts: list }) {
         [0, t("Until pressed again")]].map(([value, label]) =>
         el("option", { value: String(value), selected: settings.manualAdSeconds === value }, label)))),
       el("p", { class: "caption" }, t("The ad still plays, without sound, and the sound comes back with the video. Nothing is skipped or blocked. If an ad is not recognized, click the megaphone (⌃⌥⌘A)."))),
+    fillerSection(settings),
     el("section", {},
       el("h2", {}, t("YouTube")),
       el("label", { class: "row" }, el("span", {}, t("Play YouTube videos in YouTube's privacy player")), checkbox("youtubePrivacyPlayer")),

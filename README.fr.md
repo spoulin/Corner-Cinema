@@ -80,6 +80,11 @@ la pub joue quand même, sans le son.
   sélecteur CSS d'un élément que le service n'affiche que pendant les pubs
   (*Présentation › Outils de développement de la page* aide à le trouver).
 - *Réglages › Couper le son des pubs automatiquement* désactive ce comportement.
+- **Musique pendant les pubs** (*Réglages*) : pendant qu'une pub joue sans le son, une radio joue à
+  la place (un lien `.pls` ou `.m3u` comme `https://somafm.com/illstreet.pls`, ou l'adresse d'un
+  flux), ou un fichier audio ou un dossier de musique. Elle entre et sort en fondu, et le film
+  revient en fondu (les *Réglages* fixent la durée des fondus et le volume de la musique). Une
+  radio reprend au direct ; les fichiers reprennent où ils s'étaient arrêtés. Vide : le silence.
 - *Modifier › Avancé › Masquer sur ce service* masque ce que vous choisissez dans les pages d'un
   service (un sélecteur CSS), comme une bannière collée au bas de la page. Corner Cinema ne
   contient aucune règle de ce genre : c'est votre choix, service par service. Certains sites y

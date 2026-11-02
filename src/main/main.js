@@ -490,6 +490,15 @@ ipcMain.handle("settings:set", (_event, changes) => {
     store.updateSettings({ hardwareAcceleration: changes.hardwareAcceleration });
     sendAcceleration();
   }
+  if (changes && typeof changes.adFillerSource === "string" && changes.adFillerSource.length < 2000) {
+    store.updateSettings({ adFillerSource: changes.adFillerSource.trim() });
+    main.filler.prepare();
+  }
+  if (changes && typeof changes.adFillerVolume === "number" && changes.adFillerVolume >= 0 && changes.adFillerVolume <= 1) {
+    store.updateSettings({ adFillerVolume: changes.adFillerVolume });
+    main.filler.setVolume(changes.adFillerVolume);
+  }
+  if (changes && [0, 0.5, 1, 2, 3].includes(changes.adFadeSeconds)) store.updateSettings({ adFadeSeconds: changes.adFadeSeconds });
   if (changes && [0, 60, 120, 180, 210, 240, 300, 600].includes(changes.manualAdSeconds)) {
     store.updateSettings({ manualAdSeconds: changes.manualAdSeconds });
   }
@@ -505,4 +514,12 @@ ipcMain.handle("settings:set", (_event, changes) => {
 });
 
 ipcMain.handle("relaunch", relaunch);
+ipcMain.handle("filler:preview", () => main.filler.preview());
+ipcMain.handle("filler:choose", async event => {
+  const { canceled, filePaths } = await dialog.showOpenDialog(BrowserWindow.fromWebContents(event.sender), {
+    properties: ["openFile", "openDirectory"],
+    message: t("Choose a music file or folder"),
+  });
+  return canceled ? null : filePaths[0];
+});
 ipcMain.handle("sign-out-all", event => signOutOfEverything(BrowserWindow.fromWebContents(event.sender)));

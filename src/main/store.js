@@ -21,6 +21,11 @@ const defaults = {
   muteAds: true,
   /** How long "This is an ad" mutes the page, in seconds (0: until pressed again). */
   manualAdSeconds: 210,
+  /** Music during ads: a radio playlist or stream address, an audio file or a folder ("": none). */
+  adFillerSource: "",
+  adFillerVolume: 0.7,
+  /** Fades of the music and of the film's return, in seconds (0: none). */
+  adFadeSeconds: 1,
   /** YouTube videos in YouTube's embeddable player, without cookies. */
   youtubePrivacyPlayer: true,
 };
