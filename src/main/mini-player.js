@@ -97,7 +97,11 @@ class MiniPlayer {
       title: "Corner Cinema",
     });
     window.setAlwaysOnTop(true, "floating");
-    window.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
+    // Without skipTransformProcessType, Electron turns the app into a background
+    // app to do this (no menu bar, no Dock icon), and doesn't always turn it back.
+    // A panel shows over full-screen apps without it.
+    window.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true, skipTransformProcessType: true });
+    app.setActivationPolicy("regular");
     window.setMinimumSize(MIN_WIDTH, Math.round(MIN_WIDTH / this.ratio));
     window.on("resize", () => this.layout());
     window.on("moved", () => this.settle());
