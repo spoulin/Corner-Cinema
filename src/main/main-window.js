@@ -374,7 +374,8 @@ class MainWindow {
     }
     const selector = this.service && this.service.hideSelector;
     if (!selector || !this.service || !urls.belongsTo(contents.getURL(), this.service.url)) return;
-    this.hidingCSS = await contents.insertCSS(`${selector} { display: none !important; }`).catch(() => null);
+    this.hidingCSS = await contents.insertCSS(`${selector} { display: none !important; }`, { cssOrigin: "user" })
+      .catch(() => null);
   }
 
   // MARK: Ads
@@ -469,7 +470,9 @@ class MainWindow {
       contents.removeInsertedCSS(this.focusCSS).catch(() => {});
       this.focusCSS = null;
     }
-    if (on) this.focusCSS = await contents.insertCSS(FOCUS_CSS).catch(() => null);
+    // As the user's style sheet: its !important rules win over the site's own
+    // (Twitch, for one, pins its player with !important rules).
+    if (on) this.focusCSS = await contents.insertCSS(FOCUS_CSS, { cssOrigin: "user" }).catch(() => null);
   }
 
   contextMenu(contents, params) {

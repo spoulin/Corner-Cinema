@@ -1,4 +1,5 @@
-/* The site's player over the whole page, in the mini player (classes set by player.js).
+/* The site's player over the whole page, in the mini player (classes set by preload/page.js).
+   Added as the user's style sheet: its !important rules win over the site's own.
    Its ancestors go above everything else, and lose what would keep the player
    inside them (a transform makes "fixed" relative to it). Nothing else is hidden. */
 .cc-video-ancestor {
