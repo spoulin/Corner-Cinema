@@ -10,3 +10,6 @@ select { font: inherit; padding: 3px 6px; border-radius: 6px; }
 .shortcut { padding: 3px 0; }
 .key { font-family: ui-monospace, Menlo, monospace; color: var(--secondary); }
 .key.unavailable { color: #d9534f; text-decoration: line-through; }
+.slider { display: flex; align-items: center; gap: 8px; }
+.slider input { width: 160px; }
+.slider .value { width: 44px; text-align: right; font-variant-numeric: tabular-nums; color: var(--secondary); }

@@ -35,7 +35,7 @@ page passe dans une petite fenêtre flottante, sans s'arrêter.
   les barres de progression du site continuent de marcher.
 - **Échap** (après un clic sur le lecteur) ramène la vidéo dans la fenêtre, sans l'arrêter.
 - **Clic droit** pour les options : revenir à la fenêtre, fermer (met en pause), **Opacité**
-  (de 100 % à 40 %), **Son seulement** (une bande mince avec les commandes ; le film continue
+  (paliers de 100 % à 40 % ; toute valeur dès 20 % avec le curseur des *Réglages*), **Son seulement** (une bande mince avec les commandes ; le film continue
   dessous), **Verrouiller** (les clics passent au travers ; ⌃⌥⌘T déverrouille).
 - *Réglages › Passer au mini lecteur quand je vais dans une autre app* désactive le passage automatique.
 - Le mini lecteur n'active pas Corner Cinema (il vous laisse dans votre travail) : la barre des

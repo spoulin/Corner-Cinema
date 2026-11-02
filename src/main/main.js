@@ -487,6 +487,10 @@ ipcMain.handle("settings:set", (_event, changes) => {
     if (changes && typeof changes[key] === "boolean") store.updateSettings({ [key]: changes[key] });
   }
   if (changes && ("muteAds" in changes || "youtubePrivacyPlayer" in changes)) sendPageConfig();
+  // The mini player's opacity, 20 % to 100 %, applied right away.
+  if (changes && typeof changes.miniOpacity === "number" && changes.miniOpacity >= 0.2 && changes.miniOpacity <= 1) {
+    main.mini.setOpacity(Math.round(changes.miniOpacity * 100) / 100);
+  }
   return { settings: store.settings(), acceleration: acceleration() };
 });
 

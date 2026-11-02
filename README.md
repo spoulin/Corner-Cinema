@@ -33,7 +33,7 @@ moves to a small floating window, still playing.
   site's progress bars keep working.
 - **Escape** (after a click on the player) brings the video back to the window, still playing.
 - **Right-click** for the options: back to the window, close (pauses), **Opacity**
-  (100 % to 40 %), **Audio Only** (a thin bar with the controls; the film plays on under it),
+  (presets from 100 % to 40 %; any value from 20 % with the slider in *Settings*), **Audio Only** (a thin bar with the controls; the film plays on under it),
   **Lock** (clicks go through the player; ⌃⌥⌘T unlocks it).
 - *Settings › Switch to the mini player when I go to another app* turns the automatic switch off.
 - The mini player doesn't make Corner Cinema the active app (it leaves you in your work), so the

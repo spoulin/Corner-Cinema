@@ -17,6 +17,25 @@ function el(tag, attributes = {}, ...children) {
 
 let shortcuts = [];
 
+/** A slider from 20 % to 100 %, applied to the mini player while it moves. */
+function opacityRow(value) {
+  const percent = Math.round((value ?? 1) * 100);
+  const label = el("span", { class: "value" }, `${percent} %`);
+  const slider = el("input", {
+    type: "range",
+    min: "20",
+    max: "100",
+    step: "5",
+    value: String(percent),
+    oninput: event => {
+      label.textContent = `${event.target.value} %`;
+      cc.setSettings({ miniOpacity: Number(event.target.value) / 100 });
+    },
+  });
+  return el("div", { class: "row" }, el("span", {}, t("Opacity of the mini player")),
+    el("span", { class: "slider" }, slider, label));
+}
+
 function render({ settings, acceleration, shortcuts: list }) {
   if (list) shortcuts = list;
   const autoMini = el("input", {
@@ -44,7 +63,8 @@ function render({ settings, acceleration, shortcuts: list }) {
       el("h2", {}, t("Mini Player")),
       el("label", { class: "row" }, el("span", {}, t("Switch to the mini player when I go to another app")), autoMini),
       el("p", { class: "caption" }, t("Only while a video is playing. The mini player stays on top of every app, on every desktop.")),
-      el("label", { class: "row" }, el("span", {}, t("Snap the mini player to the edges of the screen")), checkbox("miniSnap"))),
+      el("label", { class: "row" }, el("span", {}, t("Snap the mini player to the edges of the screen")), checkbox("miniSnap")),
+      opacityRow(settings.miniOpacity)),
     el("section", {},
       el("h2", {}, t("Ads")),
       el("label", { class: "row" }, el("span", {}, t("Mute ads automatically")), checkbox("muteAds")),

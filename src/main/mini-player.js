@@ -279,6 +279,7 @@ class MiniPlayer {
       { type: "separator" },
       {
         label: t("Opacity"),
+        // Any value from 20 % to 100 % is in Settings.
         submenu: OPACITIES.map(value => ({
           label: `${Math.round(value * 100)} %`,
           type: "radio",
