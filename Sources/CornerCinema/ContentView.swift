@@ -357,9 +357,6 @@ struct BrowserView: View {
                     .progressViewStyle(.linear)
                     .controlSize(.small)
             }
-            if model.windowScreenShowsNoVideo, model.video.has {
-                NoVideoScreenBanner()
-            }
             if let message = model.errorMessage {
                 VStack(spacing: 12) {
                     Image(systemName: "wifi.exclamationmark")
@@ -378,32 +375,6 @@ struct BrowserView: View {
                 .background(.background)
             }
         }
-    }
-}
-
-/// The window is on a DisplayLink or AirPlay screen: the video stays black there.
-private struct NoVideoScreenBanner: View {
-    @Environment(PlayerModel.self) private var model
-
-    var body: some View {
-        HStack(spacing: 10) {
-            Image(systemName: "display.trianglebadge.exclamationmark")
-                .font(.title3)
-            Text("This screen is connected through DisplayLink or AirPlay: videos may stay black on it, with only the sound.")
-                .fixedSize(horizontal: false, vertical: true)
-            Spacer(minLength: 8)
-            if let name = model.directScreenName {
-                Button("Move to “\(name)”") { model.moveWindowToDirectScreen() }
-            }
-            Button("Mini Player") { model.enterMini() }
-                .disabled(!model.canShowMini)
-        }
-        .font(.callout)
-        .padding(.horizontal, 14)
-        .padding(.vertical, 10)
-        .background(.orange.opacity(0.92), in: RoundedRectangle(cornerRadius: 10))
-        .foregroundStyle(.black)
-        .padding(10)
     }
 }
 

@@ -28,13 +28,10 @@ final class MiniPlayer: NSObject {
         didSet {
             panel?.ignoresMouseEvents = isLocked
             if isLocked { showsControls = false }
-            if isLocked != oldValue {
-                flash(isLocked ? String(localized: "Locked: clicks go through. ⌃⌥⌘T to unlock.") : String(localized: "Unlocked"))
-            }
+            if isLocked != oldValue { flashLockNotice() }
         }
     }
-    /// A short message over the video.
-    private(set) var notice: String?
+    private(set) var showsLockNotice = false
     var opacity = UserDefaults.standard.double(forKey: Defaults.miniOpacity) {
         didSet {
             panel?.alphaValue = opacity
@@ -53,7 +50,7 @@ final class MiniPlayer: NSObject {
     @ObservationIgnored private var videoSize = NSSize(width: 16, height: 9)
     @ObservationIgnored private var frameBeforeAudioOnly: NSRect?
     @ObservationIgnored private var hideTask: Task<Void, Never>?
-    @ObservationIgnored private var noticeTask: Task<Void, Never>?
+    @ObservationIgnored private var lockNoticeTask: Task<Void, Never>?
     @ObservationIgnored private var snapTimer: Timer?
 
     init(model: PlayerModel) {
@@ -66,7 +63,6 @@ final class MiniPlayer: NSObject {
         isHidden = false
         if size.width > 0, size.height > 0 { videoSize = size }
         if !isAudioOnly { applyProportions(animate: false) }
-        moveToDirectScreenIfNeeded(animate: false)
         panel.alphaValue = opacity
         panel.ignoresMouseEvents = isLocked
         panel.orderFrontRegardless()
@@ -193,7 +189,7 @@ final class MiniPlayer: NSObject {
     }
 
     private func snap() {
-        guard let panel, panel.isVisible, !moveToDirectScreenIfNeeded(animate: true) else { return }
+        guard let panel, panel.isVisible else { return }
         let area = visibleArea(for: panel.frame)
         let threshold = 48.0
         var frame = panel.frame
@@ -243,36 +239,14 @@ final class MiniPlayer: NSObject {
     }
     #endif
 
-    private func flash(_ text: String, seconds: Double = 2.5) {
-        noticeTask?.cancel()
-        notice = text
-        noticeTask = Task { [weak self] in
-            try? await Task.sleep(for: .seconds(seconds))
+    private func flashLockNotice() {
+        lockNoticeTask?.cancel()
+        showsLockNotice = true
+        lockNoticeTask = Task { [weak self] in
+            try? await Task.sleep(for: .seconds(2.5))
             guard !Task.isCancelled else { return }
-            self?.notice = nil
+            self?.showsLockNotice = false
         }
-    }
-
-    /// Screens copied by DisplayLink or AirPlay play the sound but show no
-    /// video: the player goes to the same corner of a screen the Mac drives.
-    @discardableResult
-    private func moveToDirectScreenIfNeeded(animate: Bool) -> Bool {
-        guard UserDefaults.standard.bool(forKey: Defaults.directScreenOnly), let panel,
-              let screen = NSScreen.screens.first(where: { $0.frame.contains(NSPoint(x: panel.frame.midX, y: panel.frame.midY)) }) ?? panel.screen,
-              !Displays.isDirect(screen),
-              let target = Displays.directScreen(preferring: model.mainWindow?.screen)
-        else { return false }
-        let from = screen.visibleFrame, area = target.visibleFrame
-        var frame = panel.frame
-        frame.size.width = min(frame.width, area.width / 2)
-        frame.size.height = min(frame.height, area.height / 2)
-        frame.origin.x = frame.midX > from.midX ? area.maxX - frame.width - Self.margin : area.minX + Self.margin
-        frame.origin.y = frame.midY > from.midY ? area.maxY - frame.height - Self.margin : area.minY + Self.margin
-        panel.setFrame(frame, display: true, animate: animate)
-        if !isAudioOnly { applyProportions(animate: false) }
-        flash(String(format: String(localized: "“%@” shows no video (DisplayLink or AirPlay): the player moved to “%@”."),
-                     screen.localizedName, target.localizedName), seconds: 5)
-        return true
     }
 }
 

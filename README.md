@@ -55,18 +55,6 @@ the video moves to a small floating window.
 
 *Settings › Switch to the mini player when I go to another app* turns the automatic switch off.
 
-### DisplayLink and AirPlay screens
-
-Screens connected through DisplayLink, AirPlay or Sidecar get a copy of the Mac's image.
-macOS leaves protected videos (Netflix, Mubi…) out of that copy, and hardware-decoded
-videos often stay black there too: only the sound plays. WebKit has no setting to turn
-hardware acceleration off, and protected videos need it anyway.
-
-- The mini player always goes to a screen connected to the Mac itself (same corner).
-  Dropped on a DisplayLink screen, it moves back, with a message.
-- On such a screen, the main window shows a banner to move it, or to use the mini player.
-- *Settings › Keep the mini player on a screen connected to the Mac* turns this off.
-
 ## Ads
 
 While an ad plays, Corner Cinema mutes the video, then gives the sound back when the

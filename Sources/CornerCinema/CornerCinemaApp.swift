@@ -45,14 +45,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         mainWindow = controller
         model.mainWindow = controller.window
         model.showMainWindow()
-        model.updateWindowScreen()
         for shortcut in GlobalShortcut.allCases {
             HotKeys.shared.register(shortcut) { [weak model] in model?.perform(shortcut) }
         }
-    }
-
-    func applicationDidChangeScreenParameters(_ notification: Notification) {
-        model.updateWindowScreen()
     }
 
     func applicationDidResignActive(_ notification: Notification) {
@@ -158,7 +153,6 @@ struct MenuBarMenu: View {
 struct SettingsView: View {
     @AppStorage(Defaults.autoMini) private var autoMini = true
     @AppStorage(Defaults.muteAds) private var muteAds = true
-    @AppStorage(Defaults.directScreenOnly) private var directScreenOnly = true
     @AppStorage(Defaults.showMenuBarIcon) private var showMenuBarIcon = true
     @State private var confirmSignOut = false
 
@@ -167,10 +161,6 @@ struct SettingsView: View {
             Section("Mini Player") {
                 Toggle("Switch to the mini player when I go to another app", isOn: $autoMini)
                 Text("Only while a video is playing. The mini player stays on top of every app, on every desktop.")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                Toggle("Keep the mini player on a screen connected to the Mac", isOn: $directScreenOnly)
-                Text("Screens connected through DisplayLink, AirPlay or Sidecar play the sound of the videos but often not their image (never for protected videos such as Netflix).")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }

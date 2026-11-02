@@ -56,18 +56,6 @@ la vidéo passe dans une petite fenêtre flottante.
 
 *Réglages › Passer au mini lecteur quand je vais dans une autre app* désactive le passage automatique.
 
-### Écrans DisplayLink et AirPlay
-
-Les écrans reliés par DisplayLink, AirPlay ou Sidecar reçoivent une copie de l'image du Mac.
-macOS laisse les vidéos protégées (Netflix, Mubi…) hors de cette copie, et les vidéos décodées
-par le matériel y restent souvent noires aussi : seul le son joue. WebKit n'a pas de réglage
-pour couper l'accélération matérielle, et les vidéos protégées en ont besoin de toute façon.
-
-- Le mini lecteur va toujours sur un écran branché au Mac lui-même (dans le même coin).
-  Lâché sur un écran DisplayLink, il y retourne, avec un message.
-- Sur un tel écran, la fenêtre principale affiche un bandeau pour la déplacer, ou passer au mini lecteur.
-- *Réglages › Garder le mini lecteur sur un écran branché au Mac* désactive ce comportement.
-
 ## Pubs
 
 Pendant une pub, Corner Cinema coupe le son de la vidéo, puis le remet quand le film revient.

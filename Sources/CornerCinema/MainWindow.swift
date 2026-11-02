@@ -33,14 +33,6 @@ final class MainWindowController: NSObject, NSWindowDelegate {
         window.setFrameAutosaveName("main")
     }
 
-    func windowDidChangeScreen(_ notification: Notification) {
-        model.updateWindowScreen()
-    }
-
-    func windowDidChangeScreenProfile(_ notification: Notification) {
-        model.updateWindowScreen()
-    }
-
     func windowShouldClose(_ sender: NSWindow) -> Bool {
         model.mainWindowWillHide()
         sender.orderOut(nil)
