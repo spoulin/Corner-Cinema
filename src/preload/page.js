@@ -113,6 +113,9 @@ const detectAd = () => {
     }
   }
   if ([...document.querySelectorAll(AD_CLASSES)].some(shown)) return true;
+  // Google's video ad SDK (IMA) plays its ads in videos of their own, titled
+  // "Advertisement" (Plex and many others): whether the player shows its ad label or not.
+  if (videos().some(v => isPlaying(v) && /^advertisement$/i.test(v.title))) return true;
   if (isAdFrame) return videos().some(v => isPlaying(v) && shown(v)) || labelIn(document.body, true);
   // Around the main video, and any video that plays (players fade their video
   // out while an ad starts: it may not count as shown).

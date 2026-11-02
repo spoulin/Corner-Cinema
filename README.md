@@ -48,6 +48,7 @@ site: the ad still plays, without sound.
   - its label in the player ("Ad 1 of 2", "Ad · 0:15", "Publicité", "Advertisement",
     "Your video will resume after the ad");
   - the classes common ad players use (YouTube's among them);
+  - the videos Google's ad SDK (IMA) plays its ads in (titled "Advertisement"), as on Plex;
   - frames from ad servers that play a video.
 - "Ad · muted" shows in the toolbar, and for a moment on the mini player.
 - An ad not recognized: click the megaphone (or ⌃⌥⌘A, or right-click in the mini player).

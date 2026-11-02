@@ -50,6 +50,7 @@ la pub joue quand même, sans le son.
   - son étiquette dans le lecteur (« Publicité 1 sur 2 », « Ad · 0:15 », « Advertisement »,
     « Votre vidéo reprendra après la pub ») ;
   - les classes qu'utilisent les lecteurs de pub courants (dont celui de YouTube) ;
+  - les vidéos où le SDK de pub de Google (IMA) joue ses pubs (titre « Advertisement »), comme sur Plex ;
   - les cadres de serveurs de pub qui jouent une vidéo.
 - « Pub · son coupé » s'affiche dans la barre d'outils, et un instant sur le mini lecteur.
 - Une pub non reconnue : cliquer le mégaphone (ou ⌃⌥⌘A, ou clic droit dans le mini lecteur).
