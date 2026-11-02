@@ -267,6 +267,8 @@ class MainWindow {
         if (String(event.message).startsWith("[cc]")) console.log(event.message);
       });
     }
+    // The user's own "hide on this service" rule, in each page of the service.
+    contents.on("dom-ready", () => this.applyHiding());
     contents.on("did-finish-load", () => {
       // A new page in the mini player (next episode): isolate its player too.
       if (this.mini.isOpen) this.isolatePlayer(true);
@@ -360,6 +362,19 @@ class MainWindow {
     this.userMuted = !this.userMuted;
     this.updateAudio();
     if (this.mini.isOpen) this.mini.send();
+  }
+
+  /** Hides what the user chose to hide on this service (Edit › Advanced). */
+  async applyHiding() {
+    const contents = this.page && this.page.webContents;
+    if (!contents) return;
+    if (this.hidingCSS) {
+      contents.removeInsertedCSS(this.hidingCSS).catch(() => {});
+      this.hidingCSS = null;
+    }
+    const selector = this.service && this.service.hideSelector;
+    if (!selector || !this.service || !urls.belongsTo(contents.getURL(), this.service.url)) return;
+    this.hidingCSS = await contents.insertCSS(`${selector} { display: none !important; }`).catch(() => null);
   }
 
   // MARK: Ads

@@ -120,5 +120,7 @@
   "The ad still plays, without sound, and the sound comes back with the video. Nothing is skipped or blocked. If an ad is not recognized, click the megaphone (⌃⌥⌘A).": "La pub joue quand même, sans le son, et le son revient avec la vidéo. Rien n’est sauté ni bloqué. Si une pub n’est pas reconnue, cliquez sur le mégaphone (⌃⌥⌘A).",
   "YouTube": "YouTube",
   "Play YouTube videos in YouTube's privacy player": "Lire les vidéos YouTube dans le lecteur confidentialité de YouTube",
-  "YouTube's embeddable player, without tracking cookies and without the page around it. YouTube Premium isn't recognized there; turn this off to keep the normal page.": "Le lecteur intégrable de YouTube, sans cookies de suivi et sans la page autour. YouTube Premium n’y est pas reconnu ; désactivez ce réglage pour garder la page normale."
+  "YouTube's embeddable player, without tracking cookies and without the page around it. YouTube Premium isn't recognized there; turn this off to keep the normal page.": "Le lecteur intégrable de YouTube, sans cookies de suivi et sans la page autour. YouTube Premium n’y est pas reconnu ; désactivez ce réglage pour garder la page normale.",
+  "Hide on this service (CSS selector)": "Masquer sur ce service (sélecteur CSS)",
+  "Optional. Elements to hide on this service's pages, such as a banner stuck to the bottom. Some sites take this for an ad blocker: remove it if the site complains.": "Facultatif. Des éléments à masquer dans les pages de ce service, comme une bannière collée au bas. Certains sites y voient un bloqueur de pub : retirez-le si le site se plaint."
 }

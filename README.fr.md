@@ -59,6 +59,10 @@ la pub joue quand même, sans le son.
   sélecteur CSS d'un élément que le service n'affiche que pendant les pubs
   (*Présentation › Outils de développement de la page* aide à le trouver).
 - *Réglages › Couper le son des pubs automatiquement* désactive ce comportement.
+- *Modifier › Avancé › Masquer sur ce service* masque ce que vous choisissez dans les pages d'un
+  service (un sélecteur CSS), comme une bannière collée au bas de la page. Corner Cinema ne
+  contient aucune règle de ce genre : c'est votre choix, service par service. Certains sites y
+  voient un bloqueur de pub.
 
 ## YouTube
 

@@ -8,7 +8,9 @@ DisplayLink runs, Chromium without hardware acceleration does.
 ## Rules
 
 - Never add a streaming site to the app by default: the user adds their own services.
-- Never skip, block or alter ads or DRM: ads are only muted, locally, then unmuted.
+- Never skip, block or alter ads or DRM: ads are only muted, locally, then unmuted. The only
+  exception is the user's own per-service "hide" selector (Edit › Advanced); the app ships no
+  hiding or blocking rule of its own.
 - Never hide page elements to isolate the player: sites check that their bait ad elements
   stay visible (Tubi shows "Please disable your ad-blocker"). The player is only put on top.
 - Service pages only get `src/preload/page.js`, which exposes nothing to the site (no

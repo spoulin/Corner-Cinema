@@ -347,6 +347,7 @@ ipcMain.handle("service:add", (_event, data) => {
     name: String(data.name || "").trim() || urls.suggestedName(url),
     url,
     adSelector: String(data.adSelector || "").trim(),
+    hideSelector: String(data.hideSelector || "").trim(),
   });
   sendServices();
   main.open(service);
@@ -360,8 +361,13 @@ ipcMain.handle("service:update", (_event, data) => {
     name: String(data.name || "").trim() || urls.suggestedName(url),
     url,
     adSelector: String(data.adSelector || "").trim(),
+    hideSelector: String(data.hideSelector || "").trim(),
   });
   sendServices();
+  if (main.service && main.service.id === data.id) {
+    main.service = store.service(data.id);
+    main.applyHiding();
+  }
 });
 
 ipcMain.handle("service:open", (_event, id) => {

@@ -46,12 +46,12 @@ function updateSettings(changes) {
   return next;
 }
 
-/** [{ id, name, url, adSelector }] in the user's order. */
+/** [{ id, name, url, adSelector, hideSelector }] in the user's order. */
 const services = () => read("services.json", []);
 const saveServices = list => write("services.json", list);
 
-function addService({ name, url, adSelector = "" }) {
-  const service = { id: crypto.randomUUID(), name, url, adSelector };
+function addService({ name, url, adSelector = "", hideSelector = "" }) {
+  const service = { id: crypto.randomUUID(), name, url, adSelector, hideSelector };
   saveServices([...services(), service]);
   return service;
 }

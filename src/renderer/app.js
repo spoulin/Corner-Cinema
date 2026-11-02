@@ -177,6 +177,7 @@ function openEditor(id) {
   const address = el("input", { type: "text", value: service ? service.url : "", placeholder: "example.com", spellcheck: "false", autocomplete: "off" });
   const name = el("input", { type: "text", value: service ? service.name : "", spellcheck: "false" });
   const selector = el("input", { type: "text", class: "mono", value: service ? service.adSelector : "", placeholder: ".ad-label", spellcheck: "false" });
+  const hide = el("input", { type: "text", class: "mono", value: service ? service.hideSelector || "" : "", placeholder: "#sticky-banner", spellcheck: "false" });
   const submit = el("button", { type: "submit", class: "primary" }, service ? t("Save") : t("Add and Open"));
   const refresh = () => {
     const url = urls.normalize(address.value);
@@ -191,7 +192,7 @@ function openEditor(id) {
       event.preventDefault();
       const url = urls.normalize(address.value);
       if (!url) return;
-      const data = { name: name.value, url, adSelector: selector.value };
+      const data = { name: name.value, url, adSelector: selector.value, hideSelector: hide.value };
       if (service) cc.updateService({ ...data, id: service.id });
       else cc.addService(data);
       dialog.close();
@@ -204,7 +205,9 @@ function openEditor(id) {
   el("details", {},
     el("summary", {}, t("Advanced")),
     el("label", {}, el("span", {}, t("Ad marker (CSS selector)")), selector),
-    el("p", { class: "hint" }, t("Optional. An element this service shows only during ads. Most ads are recognized without it."))),
+    el("p", { class: "hint" }, t("Optional. An element this service shows only during ads. Most ads are recognized without it.")),
+    el("label", {}, el("span", {}, t("Hide on this service (CSS selector)")), hide),
+    el("p", { class: "hint" }, t("Optional. Elements to hide on this service's pages, such as a banner stuck to the bottom. Some sites take this for an ad blocker: remove it if the site complains."))),
   el("div", { class: "buttons" },
     el("button", { type: "button", onclick: () => dialog.close() }, t("Cancel")),
     submit));

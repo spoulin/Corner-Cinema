@@ -57,6 +57,9 @@ site: the ad still plays, without sound.
   of an element the service shows only during ads (*View › Developer Tools for the Page*
   helps to find one).
 - *Settings › Mute ads automatically* turns it off.
+- *Edit › Advanced › Hide on this service* hides what you choose on a service's pages (a CSS
+  selector), such as a banner stuck to the bottom of the page. Corner Cinema comes with no such
+  rule: it is your choice, service by service. Some sites take it for an ad blocker.
 
 ## YouTube
 
