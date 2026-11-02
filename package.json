@@ -1,0 +1,51 @@
+{
+  "name": "corner-cinema",
+  "productName": "Corner Cinema",
+  "version": "0.2.0",
+  "description": "Films and series in a corner of the screen while you work.",
+  "license": "MIT",
+  "private": true,
+  "main": "src/main/main.js",
+  "scripts": {
+    "start": "electron .",
+    "evs:setup": "python3 -m venv .evs && .evs/bin/pip install --upgrade castlabs-evs",
+    "evs:sign-dev": "node scripts/evs.js dev",
+    "app": "electron-builder --mac --dir",
+    "dist": "electron-builder --mac dmg zip"
+  },
+  "devDependencies": {
+    "electron": "github:castlabs/electron-releases#v44.9.3+wvcus",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "local.cornercinema",
+    "productName": "Corner Cinema",
+    "electronVersion": "44.9.3",
+    "electronDist": "node_modules/electron/dist",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "src/**/*",
+      "package.json"
+    ],
+    "afterPack": "scripts/evs.js",
+    "mac": {
+      "category": "public.app-category.entertainment",
+      "icon": "Resources/AppIcon.icns",
+      "identity": null,
+      "hardenedRuntime": false,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist",
+      "extendInfo": {
+        "CFBundleURLTypes": [
+          {
+            "CFBundleURLName": "local.cornercinema",
+            "CFBundleURLSchemes": ["cornercinema"]
+          }
+        ]
+      }
+    }
+  }
+}

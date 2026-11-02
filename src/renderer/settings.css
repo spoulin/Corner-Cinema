@@ -1,0 +1,9 @@
+#settings { padding: 20px 24px; }
+section { background: var(--surface); border-radius: 12px; padding: 14px 16px; margin-bottom: 14px; }
+section h2 { font-size: 13px; margin: 0 0 10px; }
+.row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+select { font: inherit; padding: 3px 6px; border-radius: 6px; }
+.caption { color: var(--secondary); font-size: 11px; margin: 8px 0 0; }
+.status { margin: 10px 0 0; font-size: 12px; }
+.status strong { font-weight: 600; }
+.restart { margin-top: 10px; display: flex; align-items: center; gap: 10px; }
