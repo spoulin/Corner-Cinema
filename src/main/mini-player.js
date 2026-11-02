@@ -4,7 +4,7 @@
 // of ours covers the video: the site shows its own controls. The page moves
 // the panel when dragged (see preload/page.js), Escape brings the video back
 // to the window, and a right-click shows the options.
-const { BaseWindow, Menu, WebContentsView, screen } = require("electron");
+const { app, BaseWindow, Menu, WebContentsView, screen } = require("electron");
 const path = require("path");
 const store = require("./store");
 const { t } = require("./i18n");
@@ -102,8 +102,9 @@ class MiniPlayer {
     window.on("resize", () => this.layout());
     window.on("moved", () => this.settle());
     window.on("resized", () => this.settle());
-    // ⌘W and the like: back to the window, paused.
+    // ⌘W and the like: back to the window, paused. (Quitting closes it for real.)
     window.on("close", event => {
+      if (app.isQuitting) return;
       event.preventDefault();
       this.player.leaveMini({ pause: true });
     });
