@@ -13,9 +13,10 @@ les regarde dans l'app.
 
 ## Installer
 
-Il n'y a pas encore de téléchargement : construisez l'app (voir [Construire](#construire)),
-puis copiez `dist/mac-arm64/Corner Cinema.app` dans `/Applications`. Elle fonctionne sur les
-Mac avec puce Apple, macOS 14 ou plus récent.
+Il n'y a pas encore de téléchargement : construisez et installez l'app avec
+`npm run install-app` (voir [Construire](#construire)). Elle va dans `/Applications`, où
+Spotlight, Raycast et le Launchpad la trouvent. Elle fonctionne sur les Mac avec puce Apple,
+macOS 14 ou plus récent.
 
 L'app n'est pas signée par Apple. Sur un autre Mac que celui qui l'a construite, macOS
 bloque le premier lancement : ouvrez *Réglages Système › Confidentialité et sécurité* et
@@ -153,6 +154,8 @@ Ensuite :
 
 - `npm start` : lance l'app depuis les sources.
 - `npm run app` : construit `dist/mac-arm64/Corner Cinema.app` (signé VMP, puis signé localement pour ce Mac).
+- `npm run install-app` : construit l'app et l'installe dans `/Applications` (en quittant d'abord
+  la copie ouverte). Vos services, réglages et connexions restent : ils ne sont pas dans l'app.
 - `npm run dist` : construit un `.dmg` et un `.zip`.
 
 Les gens qui téléchargent une app construite n'ont besoin d'aucun compte : la signature est

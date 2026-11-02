@@ -12,9 +12,9 @@ You add the streaming services you subscribe to, sign in once, and watch them in
 
 ## Install
 
-There is no download yet: build the app (see [Build](#build)), then copy
-`dist/mac-arm64/Corner Cinema.app` to `/Applications`. It runs on Macs with Apple silicon,
-macOS 14 or later.
+There is no download yet: build and install the app with `npm run install-app` (see
+[Build](#build)). It goes to `/Applications`, where Spotlight, Raycast and the Launchpad find
+it. It runs on Macs with Apple silicon, macOS 14 or later.
 
 The app isn't signed by Apple. On a Mac other than the one that built it, macOS blocks the
 first launch: open *System Settings › Privacy & Security* and click *Open Anyway*.
@@ -147,6 +147,8 @@ Then:
 
 - `npm start`: runs the app from the sources.
 - `npm run app`: builds `dist/mac-arm64/Corner Cinema.app` (VMP-signed, then signed ad hoc for this Mac).
+- `npm run install-app`: builds the app and installs it in `/Applications` (quitting the running
+  copy first). Your services, settings and sign-ins stay: they aren't in the app.
 - `npm run dist`: builds a `.dmg` and a `.zip`.
 
 People who download a built app need no account: the signature is in the app, and the

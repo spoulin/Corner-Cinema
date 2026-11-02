@@ -26,6 +26,8 @@ DisplayLink runs, Chromium without hardware acceleration does.
 - `npm run evs:setup` once, then `npm run evs:sign-dev` after each Electron install (VMP signature).
   The EVS account is the developer's; never create or sign in to one for them.
 - `npm start`: development run. `npm run app`: packaged app in `dist/mac-arm64`.
+- `npm run install-app`: builds and installs in `/Applications` (quits the running copy). The
+  user runs the installed copy: rebuild and relaunch with this, then `open -a "Corner Cinema"`.
 - `swift scripts/make-icon.swift`: redraws the icon.
 
 ## Checking a change

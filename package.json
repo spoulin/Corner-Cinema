@@ -11,6 +11,7 @@
     "evs:setup": "python3 -m venv .evs && .evs/bin/pip install --upgrade castlabs-evs",
     "evs:sign-dev": "node scripts/evs.js dev",
     "app": "electron-builder --mac --dir",
+    "install-app": "electron-builder --mac --dir && node scripts/install-app.js",
     "dist": "electron-builder --mac dmg zip"
   },
   "devDependencies": {
@@ -42,7 +43,9 @@
         "CFBundleURLTypes": [
           {
             "CFBundleURLName": "local.cornercinema",
-            "CFBundleURLSchemes": ["cornercinema"]
+            "CFBundleURLSchemes": [
+              "cornercinema"
+            ]
           }
         ]
       }
