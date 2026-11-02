@@ -62,6 +62,8 @@ function renderToolbar() {
       el("span", {}, state.title || "")),
     el("div", { class: "spacer" }),
     displayLinkNotice(),
+    toolButton("pip", t("Mini Player (⇧⌘M)"), () => cc.player("mini"),
+      { disabled: !(state.video && state.video.has) && !state.mini, text: true }),
   );
 }
 
@@ -78,7 +80,8 @@ function displayLinkNotice() {
 
 function renderHome() {
   const home = $("home");
-  home.hidden = state.browsing;
+  home.hidden = state.browsing && !state.mini;
+  if (state.browsing && state.mini) return renderMiniPlaceholder(home);
   if (state.browsing) return;
   home.replaceChildren(
     el("div", { class: "content" },
@@ -86,6 +89,17 @@ function renderHome() {
       el("p", { class: "lead" }, t("Films and series in a corner of the screen while you work.")),
       services.length ? grid() : emptyState(),
       howItWorks()));
+}
+
+/** While the page plays in the mini player. */
+function renderMiniPlaceholder(home) {
+  home.replaceChildren(el("div", { class: "placeholder" },
+    el("span", { class: "big-icon", html: icon("pip") }),
+    el("h2", {}, t("Playing in the mini player")),
+    el("p", {}, state.title || ""),
+    el("div", { class: "buttons" },
+      el("button", { onclick: () => cc.go("home") }, t("Stop")),
+      el("button", { class: "primary", onclick: () => cc.player("window") }, t("Bring It Back Here")))));
 }
 
 function grid() {
@@ -129,7 +143,8 @@ function howItWorks() {
   const steps = [
     t("Add a service you subscribe to, with its address."),
     t("Open it and sign in once: Corner Cinema remembers it."),
-    t("Start a film. The mini player, ad muting and global shortcuts are coming back in the next versions."),
+    t("Start a film, then click Mini Player, or simply switch to another app: the video stays on top, in a corner."),
+    t("Move the mini player by dragging its bar. Its controls show when the pointer is over it."),
   ];
   return el("section", { class: "steps" },
     el("h3", {}, t("How it works")),

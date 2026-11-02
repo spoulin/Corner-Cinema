@@ -15,7 +15,15 @@ function el(tag, attributes = {}, ...children) {
   return element;
 }
 
-function render({ settings, acceleration }) {
+let shortcuts = [];
+
+function render({ settings, acceleration, shortcuts: list }) {
+  if (list) shortcuts = list;
+  const autoMini = el("input", {
+    type: "checkbox",
+    checked: settings.autoMini,
+    onchange: async event => render(await cc.setSettings({ autoMini: event.target.checked })),
+  });
   const choice = el("select", {
     onchange: async event => render(await cc.setSettings({ hardwareAcceleration: event.target.value })),
   },
@@ -27,6 +35,16 @@ function render({ settings, acceleration }) {
     : t("On.");
 
   document.getElementById("settings").replaceChildren(
+    el("section", {},
+      el("h2", {}, t("Mini Player")),
+      el("label", { class: "row" }, el("span", {}, t("Switch to the mini player when I go to another app")), autoMini),
+      el("p", { class: "caption" }, t("Only while a video is playing. The mini player stays on top of every app, on every desktop."))),
+    el("section", {},
+      el("h2", {}, t("Shortcuts from any app")),
+      shortcuts.map(shortcut => el("div", { class: "row shortcut" },
+        el("span", {}, shortcut.title),
+        el("span", { class: shortcut.unavailable ? "key unavailable" : "key", title: shortcut.unavailable ? t("Another app already uses this shortcut") : "" },
+          "⌃⌥⌘" + shortcut.key)))),
     el("section", {},
       el("h2", {}, t("Hardware acceleration")),
       el("div", { class: "row" }, el("span", {}, t("Video and drawing by the graphics chip")), choice),

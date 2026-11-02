@@ -7,3 +7,6 @@ select { font: inherit; padding: 3px 6px; border-radius: 6px; }
 .status { margin: 10px 0 0; font-size: 12px; }
 .status strong { font-weight: 600; }
 .restart { margin-top: 10px; display: flex; align-items: center; gap: 10px; }
+.shortcut { padding: 3px 0; }
+.key { font-family: ui-monospace, Menlo, monospace; color: var(--secondary); }
+.key.unavailable { color: #d9534f; text-decoration: line-through; }

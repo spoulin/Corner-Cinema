@@ -3,7 +3,7 @@
 const { contextBridge, ipcRenderer } = require("electron");
 
 const init = ipcRenderer.sendSync("init");
-const channels = ["state", "services", "edit-service", "acceleration"];
+const channels = ["state", "services", "edit-service", "acceleration", "mini-state"];
 
 contextBridge.exposeInMainWorld("cc", {
   init,
@@ -19,6 +19,8 @@ contextBridge.exposeInMainWorld("cc", {
   openSettings: () => ipcRenderer.invoke("settings:open"),
   getSettings: () => ipcRenderer.invoke("settings:get"),
   setSettings: changes => ipcRenderer.invoke("settings:set", changes),
+  /** Video and mini player commands: toggle, back, forward, seek, mute, mini, menu, drag, close. */
+  player: (action, value) => ipcRenderer.invoke("player", action, value),
   relaunch: () => ipcRenderer.invoke("relaunch"),
   signOutOfEverything: () => ipcRenderer.invoke("sign-out-all"),
   on(channel, callback) {

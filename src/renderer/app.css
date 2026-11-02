@@ -191,6 +191,21 @@ h1 { font-size: 28px; margin: 0; letter-spacing: -0.01em; }
 .steps ol { margin: 0; padding-left: 20px; }
 .steps li { margin: 6px 0; }
 
+/* While the page plays in the mini player */
+.placeholder {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 4px;
+  padding: 40px;
+}
+.placeholder h2 { margin: 8px 0 0; }
+.placeholder p { color: var(--secondary); margin: 0 0 12px; }
+.placeholder .buttons { display: flex; gap: 8px; }
+
 /* Error, where the page would be */
 #error {
   position: fixed;

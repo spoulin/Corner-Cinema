@@ -10,8 +10,7 @@ les regarde dans l'app.
 
 > **Réécriture en cours.** La version 0.1 (Swift + WebKit, tag `v0.1-webkit`) n'affichait pas
 > la vidéo quand DisplayLink est actif. La version 0.2 passe à Chromium avec Widevine
-> (Electron de castLabs). Le mini lecteur, le son coupé pendant les pubs et les raccourcis
-> globaux reviennent dans les prochaines étapes.
+> (Electron de castLabs). Le son coupé pendant les pubs revient à la prochaine étape.
 
 ## Utilisation
 
@@ -22,6 +21,33 @@ les regarde dans l'app.
   cookies) ou le retirer.
 - Les fenêtres de connexion (« Continuer avec Google / Apple ») s'ouvrent dans une petite fenêtre.
 - ⇧⌘H accueil, ⌘[ / ⌘] précédent / suivant, ⌘R recharger, ⌘, réglages.
+
+## Mini lecteur
+
+Pendant une vidéo, cliquer **Mini lecteur** (⇧⌘M), ou simplement passer à une autre app : la
+page passe dans une petite fenêtre flottante, sans s'arrêter.
+
+- Elle reste par-dessus toutes les apps, sur tous les bureaux, et par-dessus les apps en plein écran.
+- Le lecteur du site (commandes, sous-titres) s'affiche seul dans toute la fenêtre.
+- Elle garde les proportions de la vidéo, s'aimante aux bords et aux coins de l'écran, et
+  retient sa taille et sa place.
+- Sa barre apparaît quand le pointeur passe dessus : ⟲ 10 s, lecture / pause, ⟳ 10 s, son,
+  la progression, les options (•••), revenir à la fenêtre, fermer (met en pause).
+- Glisser la barre (hors de ses boutons) pour déplacer le lecteur.
+- Options : **Opacité** (de 100 % à 40 %), **Son seulement** (une bande mince ; le film continue
+  dessous), **Verrouiller** (les clics passent au travers ; ⌃⌥⌘T déverrouille).
+- *Réglages › Passer au mini lecteur quand je vais dans une autre app* désactive le passage automatique.
+- Les chaînes en direct (Pluto TV) repartent d'elles-mêmes après une pause : c'est le choix du site.
+
+### Raccourcis depuis n'importe quelle app
+
+| Action | Raccourci |
+| --- | --- |
+| Lecture / Pause | ⌃⌥⌘P |
+| Reculer / avancer de 10 secondes | ⌃⌥⌘J / ⌃⌥⌘L |
+| Couper / remettre le son | ⌃⌥⌘M |
+| Verrouiller / déverrouiller le mini lecteur | ⌃⌥⌘T |
+| Afficher / masquer le mini lecteur | ⌃⌥⌘H |
 
 ### DisplayLink
 
@@ -65,7 +91,12 @@ dans l'app, et le module Widevine se télécharge depuis Google au premier lance
 
 - `src/main/main.js` : démarrage (accélération matérielle, Widevine), menus, réglages, messages.
 - `src/main/main-window.js` : la fenêtre principale ; chaque service ouvert est une
-  `WebContentsView` sous la barre d'outils, dans une session gardée (`persist:services`).
+  `WebContentsView` sous la barre d'outils, dans une session gardée (`persist:services`). Elle pilote la vidéo.
+- `src/main/mini-player.js` : le panneau flottant où passe la page, et sa barre de commandes
+  (`src/renderer/mini.*`).
+- `src/page/player.js` : tourne dans la page, dans son propre monde JavaScript : trouve, décrit et
+  pilote la vidéo principale, et marque le lecteur du site ; `src/page/focus.css` l'affiche seul.
+  Rien d'autre n'est caché dans la page (les sites vérifient que leurs éléments de pub restent visibles).
 - `src/main/store.js` : services, icônes et réglages, en JSON dans le dossier de l'app.
 - `src/main/displaylink.js` : savoir si DisplayLink est actif.
 - `src/renderer/` : la barre d'outils, l'accueil, l'éditeur de service et les réglages (HTML, sans framework).

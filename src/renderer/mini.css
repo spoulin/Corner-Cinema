@@ -1,0 +1,113 @@
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: transparent;
+  color: #fff;
+  font: 12px/1.3 -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+  overflow: hidden;
+  cursor: default;
+}
+
+/* The bar over the bottom of the video (or the whole player in audio-only mode). */
+#bar {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 4px;
+  padding: 0 10px 8px;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.82) 55%);
+}
+body.audio #bar {
+  justify-content: center;
+  padding: 0 12px;
+  background: #1e1e21;
+}
+
+.row { display: flex; align-items: center; gap: 4px; min-width: 0; }
+.title {
+  flex: 1;
+  min-width: 0;
+  padding: 0 6px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-weight: 600;
+  opacity: 0.9;
+}
+.title small { display: block; font-weight: 400; opacity: 0.7; font-variant-numeric: tabular-nums; }
+
+button {
+  border: none;
+  background: none;
+  color: inherit;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  padding: 0;
+}
+button:hover { background: rgba(255, 255, 255, 0.16); }
+button.big .icon { width: 22px; height: 22px; }
+button:disabled { opacity: 0.35; }
+
+.icon {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.icon.filled { fill: currentColor; stroke: none; }
+
+.progress {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.9;
+}
+input[type=range] {
+  flex: 1;
+  height: 4px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+  outline: none;
+  margin: 0;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #fff;
+}
+.live { font-size: 10px; font-weight: 600; letter-spacing: 0.04em; opacity: 0.85; }
+
+#notice {
+  position: fixed;
+  left: 50%;
+  bottom: 12px;
+  transform: translateX(-50%);
+  max-width: calc(100% - 24px);
+  background: rgba(0, 0, 0, 0.78);
+  border-radius: 8px;
+  padding: 7px 12px;
+  font-weight: 600;
+  text-align: center;
+}
+#notice[hidden] { display: none; }

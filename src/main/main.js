@@ -1,6 +1,6 @@
 // Corner Cinema: the user's streaming services in a window (and, next, in a
 // floating mini player). Chromium with Widevine (castLabs Electron).
-const { app, components, dialog, ipcMain, BrowserWindow, Menu, screen, session } = require("electron");
+const { app, components, dialog, globalShortcut, ipcMain, BrowserWindow, Menu, screen, session } = require("electron");
 const path = require("path");
 const store = require("./store");
 const i18n = require("./i18n");
@@ -10,6 +10,9 @@ const { MainWindow, PARTITION } = require("./main-window");
 
 const { t } = i18n;
 const PRELOAD = path.join(__dirname, "..", "preload", "ui.js");
+
+// Development: a separate data folder, so a test run doesn't touch the user's services.
+if (process.env.CORNER_CINEMA_DATA) app.setPath("userData", process.env.CORNER_CINEMA_DATA);
 
 // One Corner Cinema at a time: a second launch shows the first one's window.
 if (!app.requestSingleInstanceLock()) process.exit(0);
@@ -49,9 +52,13 @@ app.whenReady().then(async () => {
     main.open(null, resumeURL);
   }
   watchDisplayLink();
+  registerShortcuts();
 });
 
+// The Dock icon brings the window back (it says when the video is in the mini player).
 app.on("activate", () => main && main.show());
+app.on("did-resign-active", () => main && main.autoMini());
+app.on("will-quit", () => globalShortcut.unregisterAll());
 app.on("before-quit", () => {
   app.isQuitting = true;
 });
@@ -117,6 +124,44 @@ function handleLink(link) {
   if (page && main) {
     main.open(null, page);
     main.show();
+  }
+}
+
+// MARK: Playback
+
+/** Shortcuts that work from any app (⌃⌥⌘ + a key). */
+const SHORTCUTS = [
+  { key: "P", title: "Play / Pause", run: () => main.togglePlayPause() },
+  { key: "J", title: "Back 10 Seconds", run: () => main.skip(-10) },
+  { key: "L", title: "Forward 10 Seconds", run: () => main.skip(10) },
+  { key: "M", title: "Mute / Unmute", run: () => main.toggleMute() },
+  { key: "T", title: "Lock / Unlock the Mini Player", run: () => main.mini.isOpen && main.mini.setLocked(!main.mini.locked) },
+  { key: "H", title: "Show / Hide the Mini Player", run: () => (main.mini.isOpen ? main.mini.toggleHidden() : main.enterMini()) },
+];
+const unavailableShortcuts = new Set();
+
+function registerShortcuts() {
+  for (const shortcut of SHORTCUTS) {
+    if (!globalShortcut.register(`Control+Alt+Command+${shortcut.key}`, () => main && shortcut.run())) {
+      unavailableShortcuts.add(shortcut.key);
+    }
+  }
+}
+
+function player(action, value) {
+  switch (action) {
+    case "toggle": return main.togglePlayPause();
+    case "back": return main.skip(-10);
+    case "forward": return main.skip(10);
+    case "seek": return main.seek(Number(value));
+    case "mute": return main.toggleMute();
+    case "mini": return main.toggleMini();
+    case "window": return main.leaveMini();
+    case "close": return main.leaveMini({ pause: true });
+    case "menu": return main.mini.menu();
+    case "drag": return main.mini.drag(value);
+    case "audio": return main.mini.setAudioOnly(!!value);
+    default: return undefined;
   }
 }
 
@@ -193,7 +238,7 @@ function openSettings() {
   if (settingsWindow) return settingsWindow.focus();
   settingsWindow = new BrowserWindow({
     width: 540,
-    height: 400,
+    height: 720,
     resizable: false,
     minimizable: false,
     maximizable: false,
@@ -245,6 +290,20 @@ function buildMenu() {
         { label: t("Back"), accelerator: "Cmd+[", click: go("back") },
         { label: t("Forward"), accelerator: "Cmd+]", click: go("forward") },
         { label: t("Reload"), accelerator: "Cmd+R", click: go("reload") },
+      ],
+    },
+    {
+      label: t("Playback"),
+      submenu: [
+        { label: t("Play / Pause"), accelerator: "Control+Alt+Command+P", registerAccelerator: false, click: () => main.togglePlayPause() },
+        { label: t("Back 10 Seconds"), accelerator: "Control+Alt+Command+J", registerAccelerator: false, click: () => main.skip(-10) },
+        { label: t("Forward 10 Seconds"), accelerator: "Control+Alt+Command+L", registerAccelerator: false, click: () => main.skip(10) },
+        { label: t("Mute / Unmute"), accelerator: "Control+Alt+Command+M", registerAccelerator: false, click: () => main.toggleMute() },
+        { type: "separator" },
+        { label: t("Mini Player"), accelerator: "Shift+Cmd+M", click: () => main.toggleMini() },
+        { label: t("Show / Hide the Mini Player"), accelerator: "Control+Alt+Command+H", registerAccelerator: false, click: () => main.mini.toggleHidden() },
+        { label: t("Lock / Unlock the Mini Player"), accelerator: "Control+Alt+Command+T", registerAccelerator: false, click: () => main.mini.setLocked(!main.mini.locked) },
+        { label: t("Audio Only"), click: () => main.mini.setAudioOnly(!main.mini.audioOnly) },
       ],
     },
     {
@@ -313,14 +372,20 @@ ipcMain.handle("service:menu", (event, id) => {
 });
 
 ipcMain.handle("go", (_event, action) => main.go(action));
+ipcMain.handle("player", (_event, action, value) => player(action, value));
 ipcMain.handle("settings:open", () => openSettings());
-ipcMain.handle("settings:get", () => ({ settings: store.settings(), acceleration: acceleration() }));
+ipcMain.handle("settings:get", () => ({
+  settings: store.settings(),
+  acceleration: acceleration(),
+  shortcuts: SHORTCUTS.map(({ key, title }) => ({ key, title: t(title), unavailable: unavailableShortcuts.has(key) })),
+}));
 
 ipcMain.handle("settings:set", (_event, changes) => {
   if (changes && ["auto", "on", "off"].includes(changes.hardwareAcceleration)) {
     store.updateSettings({ hardwareAcceleration: changes.hardwareAcceleration });
     sendAcceleration();
   }
+  if (changes && typeof changes.autoMini === "boolean") store.updateSettings({ autoMini: changes.autoMini });
   return { settings: store.settings(), acceleration: acceleration() };
 });
 

@@ -10,6 +10,11 @@ const defaults = {
   hardwareAcceleration: "auto",
   /** A page to open again after a restart. */
   resumeURL: null,
+  /** Bring out the mini player when the user goes to another app while a video plays. */
+  autoMini: true,
+  miniOpacity: 1,
+  /** Where the mini player was last left. */
+  miniBounds: null,
 };
 
 function file(name) {

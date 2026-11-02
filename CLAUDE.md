@@ -26,7 +26,9 @@ DisplayLink runs, Chromium without hardware acceleration does.
 
 ## Checking a change
 
-- Run with `./node_modules/.bin/electron . --remote-debugging-port=9333` and use the Chrome
+- Run with `CORNER_CINEMA_DATA=<scratch folder> ./node_modules/.bin/electron . --remote-debugging-port=9333`
+  (a separate data folder: the user's services stay untouched, and the single-instance lock
+  doesn't close the test copy) and use the Chrome
   DevTools Protocol (`http://127.0.0.1:9333/json`) to evaluate scripts or take screenshots of
   the interface (`index.html`) and of the service page.
 - Video frames are not in screenshots.

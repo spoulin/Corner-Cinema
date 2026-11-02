@@ -9,7 +9,7 @@ You add the streaming services you subscribe to, sign in once, and watch them in
 
 > **Rewrite in progress.** Version 0.1 (Swift + WebKit, tag `v0.1-webkit`) showed no video
 > while DisplayLink runs. Version 0.2 moves to Chromium with Widevine (castLabs Electron).
-> The mini player, ad muting and global shortcuts come back in the next steps.
+> Ad muting comes back in the next step.
 
 ## Use
 
@@ -19,6 +19,33 @@ You add the streaming services you subscribe to, sign in once, and watch them in
 - Right-click a service to edit it, move it, sign out of it (forget its cookies) or remove it.
 - Sign-in pop-ups ("Continue with Google / Apple") open in a small window.
 - ⇧⌘H home, ⌘[ / ⌘] back / forward, ⌘R reload, ⌘, settings.
+
+## Mini player
+
+When a video plays, click **Mini Player** (⇧⌘M), or simply switch to another app: the page
+moves to a small floating window, still playing.
+
+- It stays on top of every app, on every desktop, and over apps in full screen.
+- The site's own player (controls, subtitles) shows alone over the whole window.
+- It keeps the video's proportions, snaps to the edges and corners of the screen, and
+  remembers its size and place.
+- Its bar shows when the pointer moves over it: ⟲ 10 s, play / pause, ⟳ 10 s, mute, the
+  progress, the options (•••), back to the window, close (pauses).
+- Drag the bar (outside its buttons) to move the player.
+- Options: **Opacity** (100 % to 40 %), **Audio Only** (a thin bar; the film plays on under it),
+  **Lock** (clicks go through the player; ⌃⌥⌘T unlocks it).
+- *Settings › Switch to the mini player when I go to another app* turns the automatic switch off.
+- Live channels (Pluto TV) restart by themselves when paused: that is the site's choice.
+
+### Shortcuts from any app
+
+| Action | Shortcut |
+| --- | --- |
+| Play / Pause | ⌃⌥⌘P |
+| Back / forward 10 seconds | ⌃⌥⌘J / ⌃⌥⌘L |
+| Mute / unmute | ⌃⌥⌘M |
+| Lock / unlock the mini player | ⌃⌥⌘T |
+| Show / hide the mini player | ⌃⌥⌘H |
 
 ### DisplayLink
 
@@ -62,7 +89,12 @@ Widevine module downloads from Google at first launch.
 
 - `src/main/main.js`: app start (hardware acceleration, Widevine), menus, settings, messages.
 - `src/main/main-window.js`: the main window; each open service is a `WebContentsView`
-  under the toolbar, in a persistent session (`persist:services`).
+  under the toolbar, in a persistent session (`persist:services`). It drives the video.
+- `src/main/mini-player.js`: the floating panel the page moves into, and its control bar
+  (`src/renderer/mini.*`).
+- `src/page/player.js`: runs in the page, in its own JavaScript world: finds, reports and
+  drives the main video, and marks the site's player; `src/page/focus.css` shows it alone.
+  Nothing else in the page is hidden (sites check that their ad elements stay visible).
 - `src/main/store.js`: services, icons and settings, as JSON in the app's data folder.
 - `src/main/displaylink.js`: whether DisplayLink runs.
 - `src/renderer/`: the toolbar, home screen, service editor and settings (HTML, no framework).

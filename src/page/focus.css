@@ -1,0 +1,47 @@
+/* The site's player over the whole page, in the mini player (classes set by player.js).
+   Its ancestors go above everything else, and lose what would keep the player
+   inside them (a transform makes "fixed" relative to it). Nothing else is hidden. */
+.cc-video-ancestor {
+  z-index: 2147483647 !important;
+  transform: none !important;
+  filter: none !important;
+  contain: none !important;
+  will-change: auto !important;
+  perspective: none !important;
+  opacity: 1 !important;
+  isolation: auto !important;
+  mix-blend-mode: normal !important;
+  clip-path: none !important;
+  mask: none !important;
+  overflow: visible !important;
+}
+html.cc-video-ancestor, body.cc-video-ancestor {
+  overflow: hidden !important;
+  background: #000 !important;
+}
+.cc-video-box {
+  position: fixed !important;
+  inset: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: none !important;
+  max-height: none !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  transform: none !important;
+  border-radius: 0 !important;
+  z-index: 2147483647 !important;
+  background: #000 !important;
+  visibility: visible !important;
+}
+.cc-video-chain, .cc-video-box video, .cc-video-box iframe {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+}
+.cc-video-box video {
+  object-fit: contain !important;
+}
