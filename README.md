@@ -64,8 +64,11 @@ site: the ad still plays, without sound.
   - the videos Google's ad SDK (IMA) plays its ads in (titled "Advertisement"), as on Plex;
   - frames from ad servers that play a video.
 - "Ad · muted" shows in the toolbar, and for a moment on the mini player.
-- An ad not recognized: click the megaphone (or ⌃⌥⌘A, or right-click in the mini player).
-  The sound stays off until you click again, or until the next page.
+- An ad not recognized: click the megaphone (or ⌃⌥⌘A from any app, the menu bar icon, or
+  right-click in the mini player). The sound comes back by itself after 3 min 30, a TV ad
+  break (*Settings* sets the time, or "until pressed again"), or when you press it again.
+- Live TV channels (such as a cable channel streamed by a TV provider) often carry the
+  broadcast's own commercials in the stream, with no marker at all: only the megaphone works there.
 - For a service whose ads are always missed: *Edit › Advanced › Ad marker*, a CSS selector
   of an element the service shows only during ads (*View › Developer Tools for the Page*
   helps to find one).

@@ -258,7 +258,14 @@ function trayMenu() {
       { label: t("Back 10 Seconds"), click: () => main.skip(-10) },
       { label: t("Forward 10 Seconds"), click: () => main.skip(10) },
       { label: main.userMuted ? t("Unmute") : t("Mute"), click: () => main.toggleMute() },
-      { label: t("This Is an Ad"), type: "checkbox", checked: main.manualAd, click: () => main.toggleManualAd() },
+      {
+        label: main.manualAd && main.manualAdUntil
+          ? `${t("This Is an Ad")} · ${(() => { const left = Math.max(0, Math.round((main.manualAdUntil - Date.now()) / 1000)); return `${Math.floor(left / 60)}:${String(left % 60).padStart(2, "0")}`; })()}`
+          : t("This Is an Ad"),
+        type: "checkbox",
+        checked: main.manualAd,
+        click: () => main.toggleManualAd(),
+      },
       { type: "separator" },
     );
     if (main.mini.isOpen) {
@@ -482,6 +489,9 @@ ipcMain.handle("settings:set", (_event, changes) => {
   if (changes && ["auto", "on", "off"].includes(changes.hardwareAcceleration)) {
     store.updateSettings({ hardwareAcceleration: changes.hardwareAcceleration });
     sendAcceleration();
+  }
+  if (changes && [0, 60, 120, 180, 210, 240, 300, 600].includes(changes.manualAdSeconds)) {
+    store.updateSettings({ manualAdSeconds: changes.manualAdSeconds });
   }
   for (const key of ["autoMini", "miniSnap", "muteAds", "youtubePrivacyPlayer"]) {
     if (changes && typeof changes[key] === "boolean") store.updateSettings({ [key]: changes[key] });

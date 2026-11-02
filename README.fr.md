@@ -68,8 +68,13 @@ la pub joue quand même, sans le son.
   - les vidéos où le SDK de pub de Google (IMA) joue ses pubs (titre « Advertisement »), comme sur Plex ;
   - les cadres de serveurs de pub qui jouent une vidéo.
 - « Pub · son coupé » s'affiche dans la barre d'outils, et un instant sur le mini lecteur.
-- Une pub non reconnue : cliquer le mégaphone (ou ⌃⌥⌘A, ou clic droit dans le mini lecteur).
-  Le son reste coupé jusqu'au prochain clic, ou jusqu'à la page suivante.
+- Une pub non reconnue : cliquer le mégaphone (ou ⌃⌥⌘A depuis n'importe quelle app, l'icône de
+  la barre des menus, ou clic droit dans le mini lecteur). Le son revient tout seul après 3 min 30,
+  une pause publicitaire de télé (les *Réglages* fixent la durée, ou « jusqu'au prochain appui »),
+  ou au prochain appui.
+- Les chaînes de télé en direct (une chaîne câblée diffusée par un fournisseur télé, par exemple)
+  contiennent souvent les pubs de la diffusion d'origine dans le flux, sans aucun repère : seul le
+  mégaphone y fonctionne.
 - Pour un service dont les pubs passent toujours : *Modifier › Avancé › Repère de pub*, un
   sélecteur CSS d'un élément que le service n'affiche que pendant les pubs
   (*Présentation › Outils de développement de la page* aide à le trouver).

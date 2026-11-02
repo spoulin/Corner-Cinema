@@ -133,5 +133,8 @@
   "Show Corner Cinema": "Afficher Corner Cinema",
   "Snap to the Screen's Edges": "Aimanter aux bords de l’écran",
   "Snap the mini player to the edges of the screen": "Aimanter le mini lecteur aux bords de l’écran",
-  "Opacity of the mini player": "Opacité du mini lecteur"
+  "Opacity of the mini player": "Opacité du mini lecteur",
+  "Sound back on": "Son rétabli",
+  "“This is an ad” mutes for": "« C’est une pub » coupe le son pendant",
+  "Until pressed again": "Jusqu’au prochain appui"
 }

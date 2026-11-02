@@ -405,6 +405,7 @@ class MainWindow {
   resetAds() {
     this.adFrames.clear();
     this.manualAd = false;
+    clearTimeout(this.manualAdTimer);
     this.updateAudio();
   }
 
@@ -412,6 +413,18 @@ class MainWindow {
   toggleManualAd() {
     if (!this.page) return;
     this.manualAd = !this.manualAd;
+    // The sound comes back by itself after a TV-like ad break (Settings), or when pressed again.
+    clearTimeout(this.manualAdTimer);
+    const seconds = store.settings().manualAdSeconds;
+    this.manualAdUntil = this.manualAd && seconds > 0 ? Date.now() + seconds * 1000 : null;
+    if (this.manualAd && seconds > 0) {
+      this.manualAdTimer = setTimeout(() => {
+        if (!this.manualAd) return;
+        this.manualAd = false;
+        this.updateAudio();
+        if (this.mini.isOpen) this.mini.flash(t("Sound back on"));
+      }, seconds * 1000);
+    }
     this.updateAudio();
   }
 
@@ -421,8 +434,10 @@ class MainWindow {
     if (this.page) this.page.webContents.setAudioMuted(this.userMuted || adMuted);
     const started = adMuted && !this.adMuted;
     this.adMuted = adMuted;
-    if (this.state.browsing && (this.state.ad !== adMuted || this.state.manualAd !== this.manualAd)) {
-      this.update({ ad: adMuted, manualAd: this.manualAd });
+    const until = this.manualAd ? this.manualAdUntil || null : null;
+    if (this.state.browsing && (this.state.ad !== adMuted || this.state.manualAd !== this.manualAd || this.state.adUntil !== until)) {
+      // adUntil: when "This is an ad" gives the sound back (for the countdown).
+      this.update({ ad: adMuted, manualAd: this.manualAd, adUntil: until });
     }
     if (started && this.mini.isOpen) this.mini.flash(t("Ad · muted"));
   }

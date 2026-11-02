@@ -19,6 +19,8 @@ const defaults = {
   miniBounds: null,
   /** Mute the page while an ad plays (it still plays), and give the sound back after. */
   muteAds: true,
+  /** How long "This is an ad" mutes the page, in seconds (0: until pressed again). */
+  manualAdSeconds: 210,
   /** YouTube videos in YouTube's embeddable player, without cookies. */
   youtubePrivacyPlayer: true,
 };

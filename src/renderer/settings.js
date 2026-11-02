@@ -68,6 +68,11 @@ function render({ settings, acceleration, shortcuts: list }) {
     el("section", {},
       el("h2", {}, t("Ads")),
       el("label", { class: "row" }, el("span", {}, t("Mute ads automatically")), checkbox("muteAds")),
+      el("div", { class: "row" }, el("span", {}, t("“This is an ad” mutes for")), el("select", {
+        onchange: async event => render(await cc.setSettings({ manualAdSeconds: Number(event.target.value) })),
+      }, [[60, "1 min"], [120, "2 min"], [180, "3 min"], [210, "3 min 30"], [240, "4 min"], [300, "5 min"], [600, "10 min"],
+        [0, t("Until pressed again")]].map(([value, label]) =>
+        el("option", { value: String(value), selected: settings.manualAdSeconds === value }, label)))),
       el("p", { class: "caption" }, t("The ad still plays, without sound, and the sound comes back with the video. Nothing is skipped or blocked. If an ad is not recognized, click the megaphone (⌃⌥⌘A)."))),
     el("section", {},
       el("h2", {}, t("YouTube")),

@@ -62,7 +62,7 @@ function renderToolbar() {
       el("span", {}, state.title || "")),
     el("div", { class: "spacer" }),
     displayLinkNotice(),
-    state.ad ? el("div", { class: "ad-badge" }, t("Ad · muted")) : null,
+    state.ad ? el("div", { class: "ad-badge" }, adBadgeText()) : null,
     toolButton(state.manualAd ? "megaphoneOn" : "megaphone",
       state.manualAd ? t("End of the ad: sound back on (⌃⌥⌘A)") : t("This is an ad: mute it (⌃⌥⌘A)"),
       () => cc.player("ad")),
@@ -70,6 +70,19 @@ function renderToolbar() {
       { disabled: !(state.video && state.video.has) && !state.mini, text: true }),
   );
 }
+
+/** "Ad · muted", with the time left when "This is an ad" gives the sound back by itself. */
+function adBadgeText() {
+  if (!state.adUntil) return t("Ad · muted");
+  const left = Math.max(0, Math.round((state.adUntil - Date.now()) / 1000));
+  return `${t("Ad · muted")} · ${Math.floor(left / 60)}:${String(left % 60).padStart(2, "0")}`;
+}
+
+// The countdown moves on every second.
+setInterval(() => {
+  const badge = document.querySelector(".ad-badge");
+  if (badge && state.adUntil) badge.textContent = adBadgeText();
+}, 1000);
 
 /** DisplayLink started after the app: its video stays black until a restart. */
 function displayLinkNotice() {
