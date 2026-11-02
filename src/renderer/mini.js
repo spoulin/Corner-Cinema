@@ -66,7 +66,31 @@ video.show("video", t("Show the video"));
 close.show("close", t("Close (pauses the video)"));
 const notice = document.getElementById("notice");
 
-function render(state) {
+/** A message, or the countdown pill of "This is an ad" (a click on it gives the sound back). */
+function showNotice() {
+  const until = !state.notice && !state.audioOnly && state.countdownUntil;
+  document.body.classList.toggle("pill", !!until);
+  if (until) {
+    const left = Math.max(0, Math.round((until - Date.now()) / 1000));
+    notice.textContent = `${t("Ad · muted")} · ${Math.floor(left / 60)}:${String(left % 60).padStart(2, "0")}`;
+    notice.title = t("Sound back on now");
+  } else {
+    notice.textContent = state.notice || "";
+    notice.title = "";
+  }
+  notice.hidden = !state.notice && !until;
+}
+setInterval(() => {
+  if (state && state.countdownUntil) showNotice();
+}, 1000);
+notice.addEventListener("click", () => {
+  if (document.body.classList.contains("pill")) cc.player("ad");
+});
+
+let state = null;
+
+function render(value) {
+  state = value;
   const { video: current, audioOnly, muted } = state;
   document.body.classList.toggle("audio", audioOnly);
   play.show(current.p ? "pause" : "play", t("Play / Pause (⌃⌥⌘P)"));
@@ -74,8 +98,7 @@ function render(state) {
   titleText.textContent = current.title || "";
   titleTime.hidden = !current.d;
   titleTime.textContent = current.d ? `${time(current.t)} / ${time(current.d)}` : "";
-  notice.hidden = !state.notice;
-  notice.textContent = state.notice || "";
+  showNotice();
 }
 
 bar.addEventListener("pointerdown", event => {

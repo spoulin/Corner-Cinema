@@ -10,6 +10,8 @@ const store = require("./store");
 const { t } = require("./i18n");
 
 const NOTICE_HEIGHT = 56;
+const PILL_WIDTH = 190;
+const PILL_HEIGHT = 34;
 const AUDIO_HEIGHT = 64;
 const MIN_WIDTH = 340;
 const MARGIN = 14;
@@ -129,10 +131,16 @@ class MiniPlayer {
     if (!this.window) return;
     const { width, height } = this.window.getContentBounds();
     if (this.page) this.page.setBounds({ x: 0, y: 0, width, height });
-    // Ours: the audio-only bar, or a short message at the bottom.
-    const bar = this.audioOnly ? height : Math.min(NOTICE_HEIGHT, height);
-    this.overlay.setBounds({ x: 0, y: height - bar, width, height: bar });
-    this.overlay.setVisible(this.audioOnly || !!this.notice);
+    // Ours: the audio-only bar, a short message at the bottom, or the small
+    // countdown pill of "This is an ad" (only its own surface takes clicks).
+    if (this.countdownUntil && !this.notice && !this.audioOnly) {
+      const pill = { width: Math.min(PILL_WIDTH, width), height: PILL_HEIGHT };
+      this.overlay.setBounds({ x: Math.round((width - pill.width) / 2), y: height - pill.height - 10, ...pill });
+    } else {
+      const bar = this.audioOnly ? height : Math.min(NOTICE_HEIGHT, height);
+      this.overlay.setBounds({ x: 0, y: height - bar, width, height: bar });
+    }
+    this.overlay.setVisible(this.audioOnly || !!this.notice || !!this.countdownUntil);
   }
 
   send() {
@@ -144,7 +152,16 @@ class MiniPlayer {
       audioOnly: this.audioOnly,
       locked: this.locked,
       notice: this.notice,
+      countdownUntil: this.countdownUntil,
     });
+  }
+
+  /** "This is an ad" muted the page until this time (or null): the pill shows the time left. */
+  setCountdown(until) {
+    if (this.countdownUntil === until) return;
+    this.countdownUntil = until;
+    this.layout();
+    this.send();
   }
 
   // MARK: Proportions and place

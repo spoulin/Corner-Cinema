@@ -66,7 +66,8 @@ site: the ad still plays, without sound.
 - "Ad · muted" shows in the toolbar, and for a moment on the mini player.
 - An ad not recognized: click the megaphone (or ⌃⌥⌘A from any app, the menu bar icon, or
   right-click in the mini player). The sound comes back by itself after 3 min 30, a TV ad
-  break (*Settings* sets the time, or "until pressed again"), or when you press it again.
+  break (*Settings* sets the time, or "until pressed again"), or when you press it again. Meanwhile
+  a small pill at the bottom of the mini player counts down; a click on it gives the sound back.
 - Live TV channels (such as a cable channel streamed by a TV provider) often carry the
   broadcast's own commercials in the stream, with no marker at all: only the megaphone works there.
 - For a service whose ads are always missed: *Edit › Advanced › Ad marker*, a CSS selector

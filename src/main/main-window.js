@@ -439,7 +439,8 @@ class MainWindow {
       // adUntil: when "This is an ad" gives the sound back (for the countdown).
       this.update({ ad: adMuted, manualAd: this.manualAd, adUntil: until });
     }
-    if (started && this.mini.isOpen) this.mini.flash(t("Ad · muted"));
+    this.mini.setCountdown(until);
+    if (started && this.mini.isOpen && !until) this.mini.flash(t("Ad · muted"));
   }
 
   // MARK: Mini player
