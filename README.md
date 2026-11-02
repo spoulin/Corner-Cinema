@@ -26,13 +26,15 @@ When a video plays, click **Mini Player** (⇧⌘M), or simply switch to another
 moves to a small floating window, still playing.
 
 - It stays on top of every app, on every desktop, and over apps in full screen.
-- The site's own player (controls, subtitles) shows alone over the whole window.
+- The site's own player shows alone over the whole window, with its own controls and
+  subtitles: Corner Cinema adds nothing over the video.
 - It keeps the video's proportions, snaps to the edges and corners of the screen, and
   remembers its size and place.
-- Its bar shows when the pointer moves over it: ⟲ 10 s, play / pause, ⟳ 10 s, mute, the
-  progress, the options (•••), back to the window, close (pauses).
-- Drag the bar (outside its buttons) to move the player.
-- Options: **Opacity** (100 % to 40 %), **Audio Only** (a thin bar; the film plays on under it),
+- **Drag it from anywhere** to move it. A simple click stays a click for the site; the
+  site's progress bars keep working.
+- **Escape** (after a click on the player) brings the video back to the window, still playing.
+- **Right-click** for the options: back to the window, close (pauses), **Opacity**
+  (100 % to 40 %), **Audio Only** (a thin bar with the controls; the film plays on under it),
   **Lock** (clicks go through the player; ⌃⌥⌘T unlocks it).
 - *Settings › Switch to the mini player when I go to another app* turns the automatic switch off.
 - Live channels (Pluto TV) restart by themselves when paused: that is the site's choice.
@@ -90,15 +92,16 @@ Widevine module downloads from Google at first launch.
 - `src/main/main.js`: app start (hardware acceleration, Widevine), menus, settings, messages.
 - `src/main/main-window.js`: the main window; each open service is a `WebContentsView`
   under the toolbar, in a persistent session (`persist:services`). It drives the video.
-- `src/main/mini-player.js`: the floating panel the page moves into, and its control bar
-  (`src/renderer/mini.*`).
-- `src/page/player.js`: runs in the page, in its own JavaScript world: finds, reports and
-  drives the main video, and marks the site's player; `src/page/focus.css` shows it alone.
-  Nothing else in the page is hidden (sites check that their ad elements stay visible).
+- `src/main/mini-player.js`: the floating panel the page moves into; its audio-only bar and
+  messages are `src/renderer/mini.*`.
+- `src/preload/page.js`: runs in each service page, in a world the site can't see or call:
+  finds, reports and drives the main video, marks the site's player and moves the mini
+  player when dragged. `src/page/focus.css` shows the player alone. Nothing else in the
+  page is hidden (sites check that their ad elements stay visible).
 - `src/main/store.js`: services, icons and settings, as JSON in the app's data folder.
 - `src/main/displaylink.js`: whether DisplayLink runs.
 - `src/renderer/`: the toolbar, home screen, service editor and settings (HTML, no framework).
-- `src/preload/ui.js`: the small API the app's own windows use. Service pages get none.
+- `src/preload/ui.js`: the small API the app's own windows use. Service pages can't reach it.
 - `scripts/evs.js`: VMP signing (before the Apple signature, as macOS requires).
 
 The interface is in English, and in French when the Mac is in French (`src/i18n/fr.json`).

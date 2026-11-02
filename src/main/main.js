@@ -373,6 +373,15 @@ ipcMain.handle("service:menu", (event, id) => {
 
 ipcMain.handle("go", (_event, action) => main.go(action));
 ipcMain.handle("player", (_event, action, value) => player(action, value));
+
+// From the service page's preload: its video, and the mini player being dragged.
+ipcMain.on("cc:video", (event, video) => main && main.receiveVideo(event.sender, video));
+ipcMain.on("cc:escape", event => {
+  if (main && main.mini.isOpen && main.page && event.sender === main.page.webContents) main.leaveMini();
+});
+ipcMain.on("cc:drag", (event, phase) => {
+  if (main && main.mini.isOpen && main.page && event.sender === main.page.webContents) main.mini.drag(phase);
+});
 ipcMain.handle("settings:open", () => openSettings());
 ipcMain.handle("settings:get", () => ({
   settings: store.settings(),

@@ -144,7 +144,7 @@ function howItWorks() {
     t("Add a service you subscribe to, with its address."),
     t("Open it and sign in once: Corner Cinema remembers it."),
     t("Start a film, then click Mini Player, or simply switch to another app: the video stays on top, in a corner."),
-    t("Move the mini player by dragging its bar. Its controls show when the pointer is over it."),
+    t("Drag the mini player from anywhere to move it. Escape brings the video back to the window; right-click for its options."),
   ];
   return el("section", { class: "steps" },
     el("h3", {}, t("How it works")),

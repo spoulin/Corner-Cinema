@@ -28,13 +28,15 @@ Pendant une vidéo, cliquer **Mini lecteur** (⇧⌘M), ou simplement passer à 
 page passe dans une petite fenêtre flottante, sans s'arrêter.
 
 - Elle reste par-dessus toutes les apps, sur tous les bureaux, et par-dessus les apps en plein écran.
-- Le lecteur du site (commandes, sous-titres) s'affiche seul dans toute la fenêtre.
+- Le lecteur du site s'affiche seul dans toute la fenêtre, avec ses propres commandes et
+  sous-titres : Corner Cinema n'ajoute rien par-dessus la vidéo.
 - Elle garde les proportions de la vidéo, s'aimante aux bords et aux coins de l'écran, et
   retient sa taille et sa place.
-- Sa barre apparaît quand le pointeur passe dessus : ⟲ 10 s, lecture / pause, ⟳ 10 s, son,
-  la progression, les options (•••), revenir à la fenêtre, fermer (met en pause).
-- Glisser la barre (hors de ses boutons) pour déplacer le lecteur.
-- Options : **Opacité** (de 100 % à 40 %), **Son seulement** (une bande mince ; le film continue
+- **La glisser de n'importe où** pour la déplacer. Un simple clic reste un clic pour le site ;
+  les barres de progression du site continuent de marcher.
+- **Échap** (après un clic sur le lecteur) ramène la vidéo dans la fenêtre, sans l'arrêter.
+- **Clic droit** pour les options : revenir à la fenêtre, fermer (met en pause), **Opacité**
+  (de 100 % à 40 %), **Son seulement** (une bande mince avec les commandes ; le film continue
   dessous), **Verrouiller** (les clics passent au travers ; ⌃⌥⌘T déverrouille).
 - *Réglages › Passer au mini lecteur quand je vais dans une autre app* désactive le passage automatique.
 - Les chaînes en direct (Pluto TV) repartent d'elles-mêmes après une pause : c'est le choix du site.
@@ -92,15 +94,16 @@ dans l'app, et le module Widevine se télécharge depuis Google au premier lance
 - `src/main/main.js` : démarrage (accélération matérielle, Widevine), menus, réglages, messages.
 - `src/main/main-window.js` : la fenêtre principale ; chaque service ouvert est une
   `WebContentsView` sous la barre d'outils, dans une session gardée (`persist:services`). Elle pilote la vidéo.
-- `src/main/mini-player.js` : le panneau flottant où passe la page, et sa barre de commandes
-  (`src/renderer/mini.*`).
-- `src/page/player.js` : tourne dans la page, dans son propre monde JavaScript : trouve, décrit et
-  pilote la vidéo principale, et marque le lecteur du site ; `src/page/focus.css` l'affiche seul.
-  Rien d'autre n'est caché dans la page (les sites vérifient que leurs éléments de pub restent visibles).
+- `src/main/mini-player.js` : le panneau flottant où passe la page ; sa barre « son seulement »
+  et ses messages sont dans `src/renderer/mini.*`.
+- `src/preload/page.js` : tourne dans chaque page de service, dans un monde que le site ne peut
+  ni voir ni appeler : trouve, décrit et pilote la vidéo principale, marque le lecteur du site et
+  déplace le mini lecteur quand on le glisse. `src/page/focus.css` affiche le lecteur seul. Rien
+  d'autre n'est caché dans la page (les sites vérifient que leurs éléments de pub restent visibles).
 - `src/main/store.js` : services, icônes et réglages, en JSON dans le dossier de l'app.
 - `src/main/displaylink.js` : savoir si DisplayLink est actif.
 - `src/renderer/` : la barre d'outils, l'accueil, l'éditeur de service et les réglages (HTML, sans framework).
-- `src/preload/ui.js` : la petite API des fenêtres de l'app. Les pages des services n'y ont pas accès.
+- `src/preload/ui.js` : la petite API des fenêtres de l'app. Les pages des services ne peuvent pas l'atteindre.
 - `scripts/evs.js` : la signature VMP (avant la signature Apple, comme macOS l'exige).
 
 L'interface est en anglais, et en français quand le Mac est en français (`src/i18n/fr.json`).

@@ -1,13 +1,15 @@
 // The mini player: a floating panel over every app, on every desktop and over
 // apps in full screen. It takes the open page (the video keeps playing), keeps
-// the video's proportions, snaps to the screen's edges and corners, and shows
-// a bar of controls when the pointer moves over it.
+// the video's proportions and snaps to the screen's edges and corners. Nothing
+// of ours covers the video: the site shows its own controls. The page moves
+// the panel when dragged (see preload/page.js), Escape brings the video back
+// to the window, and a right-click shows the options.
 const { BaseWindow, Menu, WebContentsView, screen } = require("electron");
 const path = require("path");
 const store = require("./store");
 const { t } = require("./i18n");
 
-const BAR_HEIGHT = 84;
+const NOTICE_HEIGHT = 56;
 const AUDIO_HEIGHT = 64;
 const MIN_WIDTH = 340;
 const MARGIN = 14;
@@ -22,7 +24,6 @@ class MiniPlayer {
     this.window = null;
     this.page = null;
     this.ratio = 16 / 9;
-    this.controls = false;
     this.locked = false;
     this.audioOnly = false;
     this.opacity = store.settings().miniOpacity;
@@ -117,16 +118,16 @@ class MiniPlayer {
 
     this.window = window;
     this.overlay = overlay;
-    this.hover = setInterval(() => this.watchPointer(), 120);
   }
 
   layout() {
     if (!this.window) return;
     const { width, height } = this.window.getContentBounds();
     if (this.page) this.page.setBounds({ x: 0, y: 0, width, height });
-    const bar = this.audioOnly ? height : Math.min(BAR_HEIGHT, height);
+    // Ours: the audio-only bar, or a short message at the bottom.
+    const bar = this.audioOnly ? height : Math.min(NOTICE_HEIGHT, height);
     this.overlay.setBounds({ x: 0, y: height - bar, width, height: bar });
-    this.overlay.setVisible(this.audioOnly || this.controls || !!this.notice);
+    this.overlay.setVisible(this.audioOnly || !!this.notice);
   }
 
   send() {
@@ -210,36 +211,10 @@ class MiniPlayer {
 
   // MARK: Controls
 
-  /** The controls show while the pointer moves over the player, and stay while it is on them. */
-  watchPointer() {
-    if (!this.isVisible || this.audioOnly) return;
-    if (this.locked) return this.setControls(false);
-    const point = screen.getCursorScreenPoint();
-    const bounds = this.window.getBounds();
-    const inside = point.x >= bounds.x && point.x < bounds.x + bounds.width
-      && point.y >= bounds.y && point.y < bounds.y + bounds.height;
-    const moved = !this.lastPoint || point.x !== this.lastPoint.x || point.y !== this.lastPoint.y;
-    this.lastPoint = point;
-    const onBar = inside && point.y >= bounds.y + bounds.height - BAR_HEIGHT;
-    if (inside && (moved || onBar)) {
-      this.lastActivity = Date.now();
-      this.setControls(true);
-    } else if (!this.menuOpen && !this.dragging && (!inside || Date.now() - this.lastActivity > 2500)) {
-      this.setControls(false);
-    }
-  }
-
-  setControls(on) {
-    if (this.controls === on) return;
-    this.controls = on;
-    this.layout();
-  }
-
   setLocked(on) {
     if (this.locked === on || !this.window) return;
     this.locked = on;
     this.window.setIgnoreMouseEvents(on);
-    if (on) this.controls = false;
     this.flash(on ? t("Locked: clicks go through. ⌃⌥⌘T to unlock.") : t("Unlocked"));
   }
 
@@ -288,9 +263,12 @@ class MiniPlayer {
     }, 2500);
   }
 
+  /** The options: a right-click on the player, or ••• in audio-only mode. */
   menu() {
-    this.menuOpen = true;
     Menu.buildFromTemplate([
+      { label: t("Back to the Window (Esc)"), click: () => this.player.leaveMini() },
+      { label: t("Close (Pauses the Video)"), click: () => this.player.leaveMini({ pause: true }) },
+      { type: "separator" },
       {
         label: t("Opacity"),
         submenu: OPACITIES.map(value => ({
@@ -302,7 +280,7 @@ class MiniPlayer {
       },
       { label: t("Audio Only"), type: "checkbox", checked: this.audioOnly, click: () => this.setAudioOnly(!this.audioOnly) },
       { label: t("Lock (Clicks Go Through)"), click: () => this.setLocked(true) },
-    ]).popup({ window: this.window, callback: () => { this.menuOpen = false; } });
+    ]).popup({ window: this.window });
   }
 }
 

@@ -13,7 +13,8 @@ html, body {
   cursor: default;
 }
 
-/* The bar over the bottom of the video (or the whole player in audio-only mode). */
+/* The audio-only bar (nothing of ours over the video otherwise). */
+body:not(.audio) #bar { display: none; }
 #bar {
   position: absolute;
   inset: 0;

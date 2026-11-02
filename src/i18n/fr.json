@@ -78,7 +78,6 @@
   "Forget the cookies and data of every site": "Oublier les cookies et les données de tous les sites",
   "Sign Out of All Services…": "Se déconnecter de tous les services…",
   "Start a film, then click Mini Player, or simply switch to another app: the video stays on top, in a corner.": "Lancez un film, puis cliquez sur Mini lecteur, ou passez simplement à une autre app : la vidéo reste par-dessus, dans un coin.",
-  "Move the mini player by dragging its bar. Its controls show when the pointer is over it.": "Déplacez le mini lecteur en glissant sa barre. Ses commandes apparaissent quand le pointeur passe dessus.",
   "Mini Player (⇧⌘M)": "Mini lecteur (⇧⌘M)",
   "Mini Player": "Mini lecteur",
   "Playing in the mini player": "Lecture dans le mini lecteur",
@@ -95,7 +94,6 @@
   "Lock (Clicks Go Through)": "Verrouiller (les clics passent au travers)",
   "Locked: clicks go through. ⌃⌥⌘T to unlock.": "Verrouillé : les clics passent au travers. ⌃⌥⌘T pour déverrouiller.",
   "Unlocked": "Déverrouillé",
-  "LIVE": "EN DIRECT",
   "Back 10 seconds (⌃⌥⌘J)": "Reculer de 10 s (⌃⌥⌘J)",
   "Forward 10 seconds (⌃⌥⌘L)": "Avancer de 10 s (⌃⌥⌘L)",
   "Play / Pause (⌃⌥⌘P)": "Lecture / Pause (⌃⌥⌘P)",
@@ -103,10 +101,12 @@
   "Unmute (⌃⌥⌘M)": "Remettre le son (⌃⌥⌘M)",
   "Options": "Options",
   "Show the video": "Afficher la vidéo",
-  "Back to the window": "Revenir à la fenêtre",
   "Close (pauses the video)": "Fermer (met la vidéo en pause)",
   "Switch to the mini player when I go to another app": "Passer au mini lecteur quand je vais dans une autre app",
   "Only while a video is playing. The mini player stays on top of every app, on every desktop.": "Seulement pendant la lecture d’une vidéo. Le mini lecteur reste par-dessus toutes les apps, sur tous les bureaux.",
   "Shortcuts from any app": "Raccourcis depuis n’importe quelle app",
-  "Another app already uses this shortcut": "Une autre app utilise déjà ce raccourci"
+  "Another app already uses this shortcut": "Une autre app utilise déjà ce raccourci",
+  "Drag the mini player from anywhere to move it. Escape brings the video back to the window; right-click for its options.": "Glissez le mini lecteur de n’importe où pour le déplacer. Échap ramène la vidéo dans la fenêtre ; clic droit pour ses options.",
+  "Back to the Window (Esc)": "Revenir à la fenêtre (Échap)",
+  "Close (Pauses the Video)": "Fermer (met la vidéo en pause)"
 }

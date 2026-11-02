@@ -11,7 +11,9 @@ DisplayLink runs, Chromium without hardware acceleration does.
 - Never skip, block or alter ads or DRM: ads are only muted, locally, then unmuted.
 - Never hide page elements to isolate the player: sites check that their bait ad elements
   stay visible (Tubi shows "Please disable your ad-blocker"). The player is only put on top.
-- Service pages get no preload with access to the app (`src/preload/ui.js` is for the app's own windows).
+- Service pages only get `src/preload/page.js`, which exposes nothing to the site (no
+  `contextBridge`) and acts only on trusted events; `src/preload/ui.js` is for the app's own windows.
+- Nothing of ours over the video in the mini player: the site shows its own controls.
 - Keep `README.md` and `README.fr.md` in sync with user-visible changes.
 - Every new user-visible string gets a French value in `src/i18n/fr.json` (keys are the English text).
 - Plain JavaScript (CommonJS in the main process, no framework in `src/renderer`); match the neighbouring code.

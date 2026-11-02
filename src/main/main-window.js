@@ -22,10 +22,10 @@ const ICON_CANDIDATES = `(() => {
 const HOME_STATE = { browsing: false };
 const NO_VIDEO = { has: false, controls: false, t: 0, d: 0, live: false, p: false, w: 0, h: 0, title: "" };
 
-/** The script that finds and drives the page's video, in its own JavaScript world. */
-const PLAYER_SCRIPT = fs.readFileSync(path.join(__dirname, "..", "page", "player.js"), "utf8");
+/** Finds and drives the page's video, in a world the site can't see (see preload/page.js). */
+const PAGE_PRELOAD = path.join(__dirname, "..", "preload", "page.js");
+/** Shows the site's player alone, in the mini player. */
 const FOCUS_CSS = fs.readFileSync(path.join(__dirname, "..", "page", "focus.css"), "utf8");
-const WORLD = 1000;
 
 class MainWindow {
   constructor({ preload, onServicesChanged }) {
@@ -76,7 +76,13 @@ class MainWindow {
     this.closePage();
     this.service = service || store.serviceFor(url);
     const view = new WebContentsView({
-      webPreferences: { partition: PARTITION, contextIsolation: true, sandbox: true, backgroundThrottling: false },
+      webPreferences: {
+        partition: PARTITION,
+        preload: PAGE_PRELOAD,
+        contextIsolation: true,
+        sandbox: true,
+        backgroundThrottling: false,
+      },
     });
     this.page = view;
     this.freshHistory = true;
@@ -98,14 +104,11 @@ class MainWindow {
     this.layout();
     this.send();
     view.webContents.loadURL(url);
-    clearInterval(this.polling);
-    this.polling = setInterval(() => this.poll(), 500);
   }
 
   /** Back to the services: the page and what plays in it stop. */
   goHome() {
     if (this.mini.isOpen) this.leaveMini({ show: false });
-    clearInterval(this.polling);
     this.closePage();
     this.service = null;
     this.state = HOME_STATE;
@@ -201,8 +204,16 @@ class MainWindow {
       this.update({ error: description || String(code), loading: false });
     });
     contents.on("did-finish-load", () => {
-      this.install();
+      // A new page in the mini player (next episode): isolate its player too.
+      if (this.mini.isOpen) this.isolatePlayer(true);
       this.fetchIcon();
+    });
+    // In the mini player, Escape brings the video back to the window.
+    contents.on("before-input-event", (event, input) => {
+      if (this.mini.isOpen && input.type === "keyDown" && input.key === "Escape") {
+        event.preventDefault();
+        this.leaveMini();
+      }
     });
     contents.on("enter-html-full-screen", () => {
       this.htmlFullScreen = true;
@@ -212,41 +223,26 @@ class MainWindow {
       this.htmlFullScreen = false;
       this.layout();
     });
-    contents.on("context-menu", (_event, params) => this.contextMenu(contents, params).popup({ window: this.window }));
+    contents.on("context-menu", (_event, params) => {
+      if (this.mini.isOpen) this.mini.menu();
+      else this.contextMenu(contents, params).popup({ window: this.window });
+    });
   }
 
   // MARK: Video
 
-  /** Adds the player script to a newly loaded page (and isolates its player in the mini player). */
-  async install() {
-    const contents = this.page && this.page.webContents;
-    if (!contents) return;
-    try {
-      await contents.executeJavaScriptInIsolatedWorld(WORLD, [{ code: PLAYER_SCRIPT }]);
-      if (this.mini.isOpen) await this.isolatePlayer(true);
-    } catch {
-      // The page went away.
-    }
-  }
-
-  async poll() {
-    const contents = this.page && this.page.webContents;
-    if (!contents) return;
-    let video = null;
-    try {
-      video = await contents.executeJavaScriptInIsolatedWorld(WORLD, [{ code: "window.__cc ? __cc.state() : null" }]);
-    } catch {
-      // Between two pages.
-    }
-    this.video = video || NO_VIDEO;
-    const summary = { has: this.video.has, p: this.video.p };
+  /** The page's video, as its preload reports it twice a second. */
+  receiveVideo(contents, video) {
+    if (!this.page || contents !== this.page.webContents || !video) return;
+    this.video = video;
+    const summary = { has: video.has, p: video.p };
     if (summary.has !== this.state.video.has || summary.p !== this.state.video.p) this.update({ video: summary });
-    if (this.mini.isOpen) this.mini.update(this.video);
+    if (this.mini.isOpen) this.mini.update(video);
   }
 
-  run(code) {
-    if (!this.page) return;
-    this.page.webContents.executeJavaScriptInIsolatedWorld(WORLD, [{ code: `window.__cc && ${code}` }]).catch(() => {});
+  /** A command for the page's preload: toggle, seek, skip, pause, mini. */
+  run(action, value) {
+    if (this.page) this.page.webContents.send("cc:player", action, value);
   }
 
   /** Netflix stops with an error when a script moves its video: its player is
@@ -277,17 +273,17 @@ class MainWindow {
   togglePlayPause() {
     if (!this.page) return;
     if (this.usesKeys()) this.press("Space");
-    else this.run("__cc.toggle()");
+    else this.run("toggle");
   }
 
   skip(seconds) {
     if (!this.page) return;
     if (this.usesKeys()) this.press(seconds < 0 ? "Left" : "Right");
-    else this.run(`__cc.skip(${Number(seconds)})`);
+    else this.run("skip", Number(seconds));
   }
 
   seek(seconds) {
-    if (this.canSeek()) this.run(`__cc.seek(${Number(seconds)})`);
+    if (this.canSeek()) this.run("seek", Number(seconds));
   }
 
   /** The listener's own mute, for the whole page. */
@@ -335,7 +331,7 @@ class MainWindow {
   async isolatePlayer(on) {
     const contents = this.page && this.page.webContents;
     if (!contents) return;
-    this.run(`__cc.setMini(${on})`);
+    this.run("mini", on);
     if (this.focusCSS) {
       contents.removeInsertedCSS(this.focusCSS).catch(() => {});
       this.focusCSS = null;
