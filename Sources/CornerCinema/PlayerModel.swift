@@ -8,9 +8,11 @@ enum Defaults {
     static let muteAds = "muteAds"
     static let showMenuBarIcon = "showMenuBarIcon"
     static let miniOpacity = "miniOpacity"
+    static let directScreenOnly = "directScreenOnly"
 
     static func register() {
-        UserDefaults.standard.register(defaults: [autoMini: true, muteAds: true, showMenuBarIcon: true, miniOpacity: 1.0])
+        UserDefaults.standard.register(defaults: [autoMini: true, muteAds: true, showMenuBarIcon: true, miniOpacity: 1.0,
+                                                  directScreenOnly: true])
     }
 }
 
@@ -58,6 +60,10 @@ final class PlayerModel: NSObject {
     private(set) var errorMessage: String?
     private(set) var video = Video()
     private(set) var place = Place.window
+    /// The main window is on a screen copied by DisplayLink or AirPlay, where
+    /// videos stay black; `directScreenName` is where they would show.
+    private(set) var windowScreenShowsNoVideo = false
+    private(set) var directScreenName: String?
     /// The page shows an ad (spotted by the page script).
     private(set) var adDetected = false
     private(set) var muteAds = UserDefaults.standard.bool(forKey: Defaults.muteAds)
@@ -383,6 +389,21 @@ final class PlayerModel: NSObject {
     func showMainWindow() {
         NSApp.activate()
         mainWindow?.makeKeyAndOrderFront(nil)
+    }
+
+    func updateWindowScreen() {
+        guard let screen = mainWindow?.screen else { return }
+        windowScreenShowsNoVideo = !Displays.isDirect(screen)
+        directScreenName = windowScreenShowsNoVideo ? Displays.directScreen(preferring: nil)?.localizedName : nil
+    }
+
+    /// The main window goes to the middle of a screen the Mac drives.
+    func moveWindowToDirectScreen() {
+        guard let window = mainWindow, let area = Displays.directScreen(preferring: nil)?.visibleFrame else { return }
+        var frame = window.frame
+        frame.size = NSSize(width: min(frame.width, area.width), height: min(frame.height, area.height))
+        frame.origin = NSPoint(x: area.midX - frame.width / 2, y: area.midY - frame.height / 2)
+        window.setFrame(frame, display: true, animate: true)
     }
 
     /// Closing the window pauses what plays in it.

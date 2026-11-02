@@ -69,6 +69,8 @@
 "Playing in the mini player" = "Lecture dans le mini lecteur";
 "Stop" = "Arrêter";
 "Bring It Back Here" = "Ramener ici";
+"This screen is connected through DisplayLink or AirPlay: videos may stay black on it, with only the sound." = "Cet écran passe par DisplayLink ou AirPlay : les vidéos peuvent y rester noires, avec le son seulement.";
+"Move to “%@”" = "Déplacer sur « %@ »";
 "OK" = "OK";
 
 /* Mini player */
@@ -91,10 +93,13 @@
 "Mute Ads Automatically" = "Couper le son des pubs automatiquement";
 "Locked: clicks go through. ⌃⌥⌘T to unlock." = "Verrouillé : les clics passent au travers. ⌃⌥⌘T pour déverrouiller.";
 "Unlocked" = "Déverrouillé";
+"“%@” shows no video (DisplayLink or AirPlay): the player moved to “%@”." = "« %1$@ » n’affiche pas les vidéos (DisplayLink ou AirPlay) : le lecteur est passé sur « %2$@ ».";
 
 /* Settings */
 "Switch to the mini player when I go to another app" = "Passer au mini lecteur quand je vais dans une autre app";
 "Only while a video is playing. The mini player stays on top of every app, on every desktop." = "Seulement pendant la lecture d’une vidéo. Le mini lecteur reste par-dessus toutes les apps, sur tous les bureaux.";
+"Keep the mini player on a screen connected to the Mac" = "Garder le mini lecteur sur un écran branché au Mac";
+"Screens connected through DisplayLink, AirPlay or Sidecar play the sound of the videos but often not their image (never for protected videos such as Netflix)." = "Les écrans reliés par DisplayLink, AirPlay ou Sidecar font entendre le son des vidéos, mais souvent sans l’image (jamais pour les vidéos protégées comme Netflix).";
 "Ads" = "Pubs";
 "Mute ads automatically" = "Couper le son des pubs automatiquement";
 "The ad still plays, without sound, and the sound comes back with the video. Nothing is skipped or blocked. If an ad is not recognized, click the megaphone." = "La pub joue quand même, sans le son, et le son revient avec la vidéo. Rien n’est sauté ni bloqué. Si une pub n’est pas reconnue, cliquez sur le mégaphone.";

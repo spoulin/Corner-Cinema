@@ -40,8 +40,8 @@ struct MiniOverlay: View {
                 .allowsHitTesting(false)
             }
 
-            if mini.showsLockNotice {
-                Text(mini.isLocked ? "Locked: clicks go through. ⌃⌥⌘T to unlock." : "Unlocked")
+            if let notice = mini.notice {
+                Text(notice)
                     .font(.system(size: 12, weight: .semibold))
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 12)
@@ -52,7 +52,7 @@ struct MiniOverlay: View {
                     .transition(.opacity)
             }
         }
-        .animation(.easeInOut(duration: 0.2), value: mini.showsLockNotice)
+        .animation(.easeInOut(duration: 0.2), value: mini.notice)
         // The panel's hidden title bar takes no room: the bars go to the edges.
         .ignoresSafeArea()
         .foregroundStyle(.white)
