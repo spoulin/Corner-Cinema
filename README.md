@@ -10,6 +10,15 @@ You add the streaming services you subscribe to, sign in once, and watch them in
 > Version 0.1 (Swift + WebKit, tag `v0.1-webkit`) showed no video while DisplayLink runs.
 > Version 0.2 moves to Chromium with Widevine (castLabs Electron).
 
+## Install
+
+There is no download yet: build the app (see [Build](#build)), then copy
+`dist/mac-arm64/Corner Cinema.app` to `/Applications`. It runs on Macs with Apple silicon,
+macOS 14 or later.
+
+The app isn't signed by Apple. On a Mac other than the one that built it, macOS blocks the
+first launch: open *System Settings › Privacy & Security* and click *Open Anyway*.
+
 ## Use
 
 - Corner Cinema comes with no site.
@@ -32,9 +41,10 @@ moves to a small floating window, still playing.
 - **Drag it from anywhere** to move it. A simple click stays a click for the site; the
   site's progress bars keep working.
 - **Escape** (after a click on the player) brings the video back to the window, still playing.
-- **Right-click** for the options: back to the window, close (pauses), **Opacity**
-  (presets from 100 % to 40 %; any value from 20 % with the slider in *Settings*), **Audio Only** (a thin bar with the controls; the film plays on under it),
-  **Lock** (clicks go through the player; ⌃⌥⌘T unlocks it).
+- **Right-click** for the options: back to the window, close (pauses), **Opacity** (presets
+  from 100 % to 40 %; any value from 20 % with the slider in *Settings*), **Audio Only** (a thin
+  bar with the controls; the film plays on under it), **Lock** (clicks go through the player;
+  ⌃⌥⌘T unlocks it).
 - *Settings › Switch to the mini player when I go to another app* turns the automatic switch off.
 - The mini player doesn't make Corner Cinema the active app (it leaves you in your work), so the
   menu bar shows the other app's menus. The **menu bar icon** has the controls, the window and
@@ -74,7 +84,7 @@ Browsing YouTube (home, search, channels) stays the normal site; ⌘[ goes back 
 - A video that can't play outside YouTube (its owner's choice) opens on its normal page.
 - YouTube Premium isn't recognized in this player: *Settings › YouTube* keeps the normal page.
 
-### Shortcuts from any app
+## Shortcuts from any app
 
 | Action | Shortcut |
 | --- | --- |
@@ -85,7 +95,7 @@ Browsing YouTube (home, search, channels) stays the normal site; ⌘[ goes back 
 | Lock / unlock the mini player | ⌃⌥⌘T |
 | Show / hide the mini player | ⌃⌥⌘H |
 
-### DisplayLink
+## DisplayLink
 
 While DisplayLink runs, video drawn by the graphics chip stays black on every screen, with
 only the sound, and macOS blocks protected video.
@@ -96,11 +106,30 @@ only the sound, and macOS blocks protected video.
 - DisplayLink started after the app: a notice in the toolbar offers to restart.
 - *Settings › Hardware acceleration*: Automatic (default), On or Off.
 
+## Known limits
+
+- **Google sign-in** ("Sign in with Google", YouTube accounts) is refused: Google blocks
+  sign-in in browsers built into apps. Sign in with an email and a password where the service
+  allows it. YouTube plays without an account.
+- **Netflix** plays at 720p at most without hardware acceleration (with DisplayLink), as in Chrome.
+- A service that only plays in Safari (FairPlay only, no Widevine) doesn't play.
+- **Live channels** (Pluto TV) restart by themselves when paused.
+
+## Privacy
+
+- No account, no analytics, no telemetry: Corner Cinema collects nothing. Its only
+  connections are the sites you open and Google's update service for the Widevine module.
+- Services, settings, sites' icons, cookies and sign-ins stay on the Mac, in
+  `~/Library/Application Support/Corner Cinema`.
+- Each service is the service's own website, used with your own account.
+
 ## Build
 
 Requirements: macOS 14+, Node.js 20+, Python 3.
 
 ```bash
+git clone https://github.com/spoulin/Corner-Cinema.git
+cd Corner-Cinema
 npm install
 node node_modules/electron/install.js   # downloads castLabs Electron, if npm did not
 npm run evs:setup                       # castLabs EVS tool, in .evs
@@ -148,3 +177,8 @@ The interface is in English, and in French when the Mac is in French (`src/i18n/
 
 [MIT](LICENSE). Electron for Content Security by castLabs; the Widevine module is
 Google's, downloaded at first launch.
+
+Corner Cinema isn't affiliated with, or endorsed by, any streaming service. The names of
+services in this document belong to their owners and only describe how the app behaves with
+them. Corner Cinema doesn't bypass any copy protection: protected videos play through
+Widevine, as in Chrome.
