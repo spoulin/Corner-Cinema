@@ -283,6 +283,8 @@ class MiniPlayer {
       },
       { label: t("Audio Only"), type: "checkbox", checked: this.audioOnly, click: () => this.setAudioOnly(!this.audioOnly) },
       { label: t("Lock (Clicks Go Through)"), click: () => this.setLocked(true) },
+      { type: "separator" },
+      { label: t("Quit Corner Cinema"), click: () => app.quit() },
     ]).popup({ window: this.window });
   }
 }

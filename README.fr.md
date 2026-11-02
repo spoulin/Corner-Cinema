@@ -38,6 +38,9 @@ page passe dans une petite fenêtre flottante, sans s'arrêter.
   (de 100 % à 40 %), **Son seulement** (une bande mince avec les commandes ; le film continue
   dessous), **Verrouiller** (les clics passent au travers ; ⌃⌥⌘T déverrouille).
 - *Réglages › Passer au mini lecteur quand je vais dans une autre app* désactive le passage automatique.
+- Le mini lecteur n'active pas Corner Cinema (il vous laisse dans votre travail) : la barre des
+  menus montre donc les menus de l'autre app. L'**icône de la barre des menus** donne les
+  commandes, la fenêtre et *Quitter*, depuis n'importe quelle app ; le clic droit du mini lecteur aussi.
 - Les chaînes en direct (Pluto TV) repartent d'elles-mêmes après une pause : c'est le choix du site.
 
 ## Pubs

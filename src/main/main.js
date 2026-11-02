@@ -1,6 +1,6 @@
 // Corner Cinema: the user's streaming services in a window (and, next, in a
 // floating mini player). Chromium with Widevine (castLabs Electron).
-const { app, components, dialog, globalShortcut, ipcMain, BrowserWindow, Menu, screen, session } = require("electron");
+const { app, components, dialog, globalShortcut, ipcMain, BrowserWindow, Menu, Tray, screen, session } = require("electron");
 const path = require("path");
 const store = require("./store");
 const i18n = require("./i18n");
@@ -31,6 +31,7 @@ app.userAgentFallback = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWe
 
 let main = null;
 let settingsWindow = null;
+let tray = null;
 /** DisplayLink started after the app: the video stays black until a restart. */
 let displayLinkNeedsRestart = false;
 
@@ -53,6 +54,7 @@ app.whenReady().then(async () => {
   }
   watchDisplayLink();
   registerShortcuts();
+  createTray();
 });
 
 // The Dock icon brings the window back (it says when the video is in the mini player).
@@ -235,6 +237,49 @@ function serviceMenu(id) {
 }
 
 // MARK: Windows and menus
+
+/** The menu bar icon: the controls, the window and Quit, from any app (the mini
+ * player doesn't make Corner Cinema the active app, so its menus aren't shown). */
+function createTray() {
+  tray = new Tray(path.join(__dirname, "..", "assets", "trayTemplate.png"));
+  tray.setToolTip("Corner Cinema");
+  const show = () => tray.popUpContextMenu(trayMenu());
+  tray.on("click", show);
+  tray.on("right-click", show);
+}
+
+function trayMenu() {
+  const items = [];
+  if (main && main.page) {
+    const video = main.video;
+    if (video.title) items.push({ label: video.title.slice(0, 60), enabled: false });
+    items.push(
+      { label: video.p ? t("Pause") : t("Play"), click: () => main.togglePlayPause() },
+      { label: t("Back 10 Seconds"), click: () => main.skip(-10) },
+      { label: t("Forward 10 Seconds"), click: () => main.skip(10) },
+      { label: main.userMuted ? t("Unmute") : t("Mute"), click: () => main.toggleMute() },
+      { label: t("This Is an Ad"), type: "checkbox", checked: main.manualAd, click: () => main.toggleManualAd() },
+      { type: "separator" },
+    );
+    if (main.mini.isOpen) {
+      items.push(
+        { label: main.mini.isVisible ? t("Hide the Mini Player") : t("Show the Mini Player"), click: () => main.mini.toggleHidden() },
+        { label: t("Lock the Mini Player"), type: "checkbox", checked: main.mini.locked, click: () => main.mini.setLocked(!main.mini.locked) },
+        { label: t("Back to the Window (Esc)"), click: () => main.leaveMini() },
+      );
+    } else {
+      items.push({ label: t("Mini Player"), enabled: main.video.has, click: () => main.enterMini() });
+    }
+    items.push({ type: "separator" });
+  }
+  items.push(
+    { label: t("Show Corner Cinema"), click: () => main && main.show() },
+    { label: t("Settings…"), click: openSettings },
+    { type: "separator" },
+    { label: t("Quit Corner Cinema"), click: () => app.quit() },
+  );
+  return Menu.buildFromTemplate(items);
+}
 
 function openSettings() {
   if (settingsWindow) return settingsWindow.focus();

@@ -36,6 +36,9 @@ moves to a small floating window, still playing.
   (100 % to 40 %), **Audio Only** (a thin bar with the controls; the film plays on under it),
   **Lock** (clicks go through the player; ⌃⌥⌘T unlocks it).
 - *Settings › Switch to the mini player when I go to another app* turns the automatic switch off.
+- The mini player doesn't make Corner Cinema the active app (it leaves you in your work), so the
+  menu bar shows the other app's menus. The **menu bar icon** has the controls, the window and
+  *Quit*, from any app; so does the mini player's right-click menu.
 - Live channels (Pluto TV) restart by themselves when paused: that is the site's choice.
 
 ## Ads
