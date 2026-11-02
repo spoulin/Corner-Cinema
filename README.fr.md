@@ -30,7 +30,7 @@ page passe dans une petite fenêtre flottante, sans s'arrêter.
 - Le lecteur du site s'affiche seul dans toute la fenêtre, avec ses propres commandes et
   sous-titres : Corner Cinema n'ajoute rien par-dessus la vidéo.
 - Elle garde les proportions de la vidéo, s'aimante aux bords et aux coins de l'écran, et
-  retient sa taille et sa place.
+  retient sa taille et sa place. Les *Réglages* (ou son clic droit) désactivent l'aimantation.
 - **La glisser de n'importe où** pour la déplacer. Un simple clic reste un clic pour le site ;
   les barres de progression du site continuent de marcher.
 - **Échap** (après un clic sur le lecteur) ramène la vidéo dans la fenêtre, sans l'arrêter.

@@ -176,10 +176,15 @@ class MiniPlayer {
     };
   }
 
-  /** Dropped near an edge, the player settles at a small distance from it. */
+  /** Dropped near an edge, the player settles at a small distance from it
+   * (unless the user turned it off: then it stays where it is dropped). */
   settle() {
     if (!this.window || this.dragging) return;
     const bounds = this.window.getBounds();
+    if (!store.settings().miniSnap) {
+      if (!this.audioOnly) store.updateSettings({ miniBounds: bounds });
+      return;
+    }
     const area = screen.getDisplayMatching(bounds).workArea;
     const next = { ...bounds };
     if (Math.abs(bounds.x - area.x) < SNAP_DISTANCE) next.x = area.x + MARGIN;
@@ -283,6 +288,12 @@ class MiniPlayer {
       },
       { label: t("Audio Only"), type: "checkbox", checked: this.audioOnly, click: () => this.setAudioOnly(!this.audioOnly) },
       { label: t("Lock (Clicks Go Through)"), click: () => this.setLocked(true) },
+      {
+        label: t("Snap to the Screen's Edges"),
+        type: "checkbox",
+        checked: store.settings().miniSnap,
+        click: () => store.updateSettings({ miniSnap: !store.settings().miniSnap }),
+      },
       { type: "separator" },
       { label: t("Quit Corner Cinema"), click: () => app.quit() },
     ]).popup({ window: this.window });

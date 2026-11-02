@@ -28,7 +28,7 @@ moves to a small floating window, still playing.
 - The site's own player shows alone over the whole window, with its own controls and
   subtitles: Corner Cinema adds nothing over the video.
 - It keeps the video's proportions, snaps to the edges and corners of the screen, and
-  remembers its size and place.
+  remembers its size and place. *Settings* (or its right-click menu) turns the snapping off.
 - **Drag it from anywhere** to move it. A simple click stays a click for the site; the
   site's progress bars keep working.
 - **Escape** (after a click on the player) brings the video back to the window, still playing.

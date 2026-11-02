@@ -483,7 +483,7 @@ ipcMain.handle("settings:set", (_event, changes) => {
     store.updateSettings({ hardwareAcceleration: changes.hardwareAcceleration });
     sendAcceleration();
   }
-  for (const key of ["autoMini", "muteAds", "youtubePrivacyPlayer"]) {
+  for (const key of ["autoMini", "miniSnap", "muteAds", "youtubePrivacyPlayer"]) {
     if (changes && typeof changes[key] === "boolean") store.updateSettings({ [key]: changes[key] });
   }
   if (changes && ("muteAds" in changes || "youtubePrivacyPlayer" in changes)) sendPageConfig();

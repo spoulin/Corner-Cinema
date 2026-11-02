@@ -13,6 +13,8 @@ const defaults = {
   /** Bring out the mini player when the user goes to another app while a video plays. */
   autoMini: true,
   miniOpacity: 1,
+  /** The mini player settles near the screen's edges and corners when dropped there. */
+  miniSnap: true,
   /** Where the mini player was last left. */
   miniBounds: null,
   /** Mute the page while an ad plays (it still plays), and give the sound back after. */
