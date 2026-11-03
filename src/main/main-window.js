@@ -14,6 +14,25 @@ const TOOLBAR_HEIGHT = 52;
 const PARTITION = "persist:services";
 
 /** The site's icons, best first (touch icons are the largest). */
+// What a frame shows during an ad the app missed: its videos, short visible
+// texts, ad-like classes and attributes (for ad-reports.log).
+const AD_REPORT = `(() => {
+  const visible = e => e.checkVisibility && e.checkVisibility();
+  const videos = [...document.querySelectorAll("video")].map(v => {
+    const r = v.getBoundingClientRect();
+    return [v.paused ? "paused" : "playing", Math.round(r.width) + "x" + Math.round(r.height), Math.round(v.currentTime) + "/" + Math.round(v.duration || 0), v.title, v.className, (v.currentSrc || "").slice(0, 60)].join(" ");
+  });
+  const texts = [...document.querySelectorAll("body *")]
+    .filter(e => e.children.length === 0 && visible(e) && (e.textContent || "").trim().length > 0 && (e.textContent || "").trim().length < 50)
+    .map(e => e.textContent.trim() + " <" + e.tagName.toLowerCase() + "." + String(e.className).slice(0, 40) + ">")
+    .slice(0, 80);
+  const marked = [...document.querySelectorAll("*")]
+    .filter(e => visible(e) && [...e.attributes].some(a => /(^|[-_ ])ad(s|vert)?([-_ A-Z]|$)|advert|commercial|sponsor|preroll|midroll/i.test(a.name + "=" + a.value)))
+    .map(e => e.tagName.toLowerCase() + " " + [...e.attributes].map(a => a.name + "=" + a.value.slice(0, 40)).join(" "))
+    .slice(0, 30);
+  return JSON.stringify({ videos, texts, marked });
+})()`;
+
 const ICON_CANDIDATES = `(() => {
   const links = [...document.querySelectorAll("link[rel~='icon' i], link[rel~='apple-touch-icon' i], link[rel~='apple-touch-icon-precomposed' i]")];
   const size = l => Math.max(0, ...String(l.sizes && l.sizes.value || "").split(/\\s+/).map(s => parseInt(s, 10) || 0));
@@ -429,6 +448,53 @@ class MainWindow {
       }, seconds * 1000);
     }
     this.updateAudio();
+    if (this.manualAd) this.recordMissedAd();
+  }
+
+  /**
+   * An ad the app didn't spot: what the page shows at that moment goes in
+   * ad-reports.log (in the app's data folder), to teach the detection later.
+   * Nothing leaves the Mac.
+   */
+  async recordMissedAd() {
+    const contents = this.page.webContents;
+    const lines = [`--- ${new Date().toISOString()} ${contents.getURL().slice(0, 120)}`];
+    for (const frame of contents.mainFrame.framesInSubtree) {
+      try {
+        lines.push(`[${frame.url.slice(0, 80)}] ${await frame.executeJavaScript(AD_REPORT)}`);
+      } catch {
+        // The frame went away, or refuses scripts.
+      }
+    }
+    const file = path.join(app.getPath("userData"), "ad-reports.log");
+    let previous = "";
+    try {
+      previous = fs.readFileSync(file, "utf8").slice(-200000);
+    } catch {
+      // The first report.
+    }
+    fs.writeFileSync(file, `${previous}${lines.join("\n")}\n`);
+  }
+
+  /** ⌃⌥⌘↑ / ↓: the music during ads, louder or quieter (shown in the mini player). */
+  nudgeMusicVolume(step) {
+    if (!store.settings().adFillerSource) return;
+    const level = this.filler.changeVolume(Number(store.settings().adFillerVolume) + step);
+    if (this.mini.isOpen) this.mini.flash(`${t("Music During Ads")} · ${Math.round(level * 100)} %`);
+  }
+
+  /** The music volume as a menu (the mini player's options, the menu bar icon). */
+  musicVolumeMenu() {
+    const current = Number(store.settings().adFillerVolume);
+    return {
+      label: t("Music During Ads"),
+      submenu: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1].map(value => ({
+        label: `${Math.round(value * 100)} %`,
+        type: "radio",
+        checked: Math.abs(current - value) < 0.05,
+        click: () => this.filler.changeVolume(value),
+      })),
+    };
   }
 
   /** The page is muted while an ad plays, or when the listener muted it. */

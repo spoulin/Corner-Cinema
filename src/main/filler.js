@@ -47,6 +47,14 @@ class Filler {
     if (this.window) this.call(`filler.stop(${fadeMs()})`);
   }
 
+  /** A new volume for the music (0 to 1), kept in Settings; returns it. */
+  changeVolume(volume) {
+    const level = Math.round(Math.min(1, Math.max(0.05, volume)) * 100) / 100;
+    store.updateSettings({ adFillerVolume: level });
+    this.setVolume(level);
+    return level;
+  }
+
   setVolume(volume) {
     if (this.window) this.call(`filler.setVolume(${Number(volume)})`);
   }

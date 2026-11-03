@@ -145,5 +145,9 @@
   "While an ad plays without sound, this plays instead: a radio (a .pls or .m3u link, or its stream address), an audio file or a folder of music. Leave it empty for silence.": "Pendant qu’une pub joue sans le son, ceci joue à la place : une radio (un lien .pls ou .m3u, ou l’adresse de son flux), un fichier audio ou un dossier de musique. Laissez vide pour le silence.",
   "Volume of the music": "Volume de la musique",
   "Fades (music, and the film coming back)": "Fondus (la musique, et le retour du film)",
-  "None": "Aucun"
+  "None": "Aucun",
+  "Music During Ads": "Musique pendant les pubs",
+  "Music During Ads: Louder": "Musique pendant les pubs : plus fort",
+  "Music During Ads: Quieter": "Musique pendant les pubs : moins fort",
+  "Also from any app: ⌃⌥⌘↑ / ⌃⌥⌘↓, or the mini player's options while it plays.": "Aussi depuis n’importe quelle app : ⌃⌥⌘↑ / ⌃⌥⌘↓, ou les options du mini lecteur pendant qu’elle joue."
 }

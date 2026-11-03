@@ -103,6 +103,7 @@ Browsing YouTube (home, search, channels) stays the normal site; ⌘[ goes back 
 | This is an ad (mute until pressed again) | ⌃⌥⌘A |
 | Lock / unlock the mini player | ⌃⌥⌘T |
 | Show / hide the mini player | ⌃⌥⌘H |
+| Music during ads: louder / quieter | ⌃⌥⌘↑ / ⌃⌥⌘↓ |
 
 ## DisplayLink
 

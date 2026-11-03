@@ -111,6 +111,7 @@ revient.
 | C'est une pub (son coupé jusqu'au prochain appui) | ⌃⌥⌘A |
 | Verrouiller / déverrouiller le mini lecteur | ⌃⌥⌘T |
 | Afficher / masquer le mini lecteur | ⌃⌥⌘H |
+| Musique pendant les pubs : plus fort / moins fort | ⌃⌥⌘↑ / ⌃⌥⌘↓ |
 
 ## DisplayLink
 

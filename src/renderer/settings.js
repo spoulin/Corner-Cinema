@@ -59,6 +59,7 @@ function fillerSection(settings) {
       }, t("Listen"))),
     el("p", { class: "caption" }, t("While an ad plays without sound, this plays instead: a radio (a .pls or .m3u link, or its stream address), an audio file or a folder of music. Leave it empty for silence.")),
     el("div", { class: "row" }, el("span", {}, t("Volume of the music")), el("span", { class: "slider" }, volume, volumeLabel)),
+    el("p", { class: "caption" }, t("Also from any app: ⌃⌥⌘↑ / ⌃⌥⌘↓, or the mini player's options while it plays.")),
     el("div", { class: "row" }, el("span", {}, t("Fades (music, and the film coming back)")), fade));
 }
 

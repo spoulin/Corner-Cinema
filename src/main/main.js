@@ -140,6 +140,8 @@ const SHORTCUTS = [
   { key: "A", title: "This Is an Ad (Mute Until Pressed Again)", run: () => main.toggleManualAd() },
   { key: "T", title: "Lock / Unlock the Mini Player", run: () => main.mini.isOpen && main.mini.setLocked(!main.mini.locked) },
   { key: "H", title: "Show / Hide the Mini Player", run: () => (main.mini.isOpen ? main.mini.toggleHidden() : main.enterMini()) },
+  { key: "Up", label: "↑", title: "Music During Ads: Louder", run: () => main.nudgeMusicVolume(0.1) },
+  { key: "Down", label: "↓", title: "Music During Ads: Quieter", run: () => main.nudgeMusicVolume(-0.1) },
 ];
 const unavailableShortcuts = new Set();
 
@@ -266,8 +268,9 @@ function trayMenu() {
         checked: main.manualAd,
         click: () => main.toggleManualAd(),
       },
-      { type: "separator" },
     );
+    if (store.settings().adFillerSource) items.push(main.musicVolumeMenu());
+    items.push({ type: "separator" });
     if (main.mini.isOpen) {
       items.push(
         { label: main.mini.isVisible ? t("Hide the Mini Player") : t("Show the Mini Player"), click: () => main.mini.toggleHidden() },
@@ -482,7 +485,7 @@ ipcMain.handle("settings:open", () => openSettings());
 ipcMain.handle("settings:get", () => ({
   settings: store.settings(),
   acceleration: acceleration(),
-  shortcuts: SHORTCUTS.map(({ key, title }) => ({ key, title: t(title), unavailable: unavailableShortcuts.has(key) })),
+  shortcuts: SHORTCUTS.map(({ key, label, title }) => ({ key: label || key, title: t(title), unavailable: unavailableShortcuts.has(key) })),
 }));
 
 ipcMain.handle("settings:set", (_event, changes) => {
