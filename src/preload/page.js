@@ -77,10 +77,10 @@ const mainVideo = () => {
 // MARK: Ads (every frame)
 
 // An ad label: "Ad 1 of 2", "Ad · 0:15", "Publicité (0:12)", "Advertisement",
-// or "Your video will resume after the ad".
+// or "Your video will resume after the ad" (or "after the break", Tubi).
 const LABEL = /^(?:ads?|advert(?:isement|ising)?|commercial|publicit[eé]s?|pubs?|annonces?)\b/i;
 const LABEL_ALONE = /^(?:advertisement|advertising|commercial|publicit[eé]s?)$/i;
-const AFTER = /\b(?:resum|play|start|begin|continu)\w*\s+(?:after|in)\s+(?:the\s+|this\s+|these\s+)?(?:ads?|advert|commercial)|\b(?:reprend|recommence|commence|d[eé]marre|continue)\w*\s+(?:apr[eè]s|dans)\s+(?:la\s+|cette\s+|les\s+|ces\s+)?(?:pub|annonce)/i;
+const AFTER = /\b(?:resum|play|start|begin|continu)\w*\s+(?:after|in)\s+(?:the\s+|this\s+|these\s+)?(?:ads?|advert|commercial|break)|\b(?:reprend|recommence|commence|d[eé]marre|continue)\w*\s+(?:apr[eè]s|dans)\s+(?:la\s+|cette\s+|les\s+|ces\s+)?(?:pub|annonce|pause publicitaire)/i;
 // Classes ad players use (YouTube's player, countdowns).
 const AD_CLASSES = ".ad-showing, .ad-interrupting, [class*='ad-countdown' i], [class*='adcountdown' i], [class*='ad-timer' i]";
 
