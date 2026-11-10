@@ -1,6 +1,7 @@
 // Corner Cinema: the user's streaming services in a window (and, next, in a
 // floating mini player). Chromium with Widevine (castLabs Electron).
-const { app, components, dialog, globalShortcut, ipcMain, BrowserWindow, Menu, Tray, screen, session } = require("electron");
+const { app, components, dialog, globalShortcut, ipcMain, BrowserWindow, Menu, Tray, screen, session, webContents } = require("electron");
+const shortcuts = require("./shortcuts");
 const path = require("path");
 const store = require("./store");
 const i18n = require("./i18n");
@@ -53,7 +54,7 @@ app.whenReady().then(async () => {
     main.open(null, resumeURL);
   }
   watchDisplayLink();
-  registerShortcuts();
+  shortcuts.register(SHORTCUT_ACTIONS);
   createTray();
 });
 
@@ -131,25 +132,25 @@ function handleLink(link) {
 
 // MARK: Playback
 
-/** Shortcuts that work from any app (⌃⌥⌘ + a key). */
-const SHORTCUTS = [
-  { key: "P", title: "Play / Pause", run: () => main.togglePlayPause() },
-  { key: "J", title: "Back 10 Seconds", run: () => main.skip(-10) },
-  { key: "L", title: "Forward 10 Seconds", run: () => main.skip(10) },
-  { key: "M", title: "Mute / Unmute", run: () => main.toggleMute() },
-  { key: "A", title: "This Is an Ad (Mute Until Pressed Again)", run: () => main.toggleManualAd() },
-  { key: "T", title: "Lock / Unlock the Mini Player", run: () => main.mini.isOpen && main.mini.setLocked(!main.mini.locked) },
-  { key: "H", title: "Show / Hide the Mini Player", run: () => (main.mini.isOpen ? main.mini.toggleHidden() : main.enterMini()) },
-  { key: "Up", label: "↑", title: "Music During Ads: Louder", run: () => main.nudgeMusicVolume(0.1) },
-  { key: "Down", label: "↓", title: "Music During Ads: Quieter", run: () => main.nudgeMusicVolume(-0.1) },
-];
-const unavailableShortcuts = new Set();
+/** What each shortcut from any app does (their keys are in shortcuts.js and Settings). */
+const SHORTCUT_ACTIONS = {
+  toggle: () => main && main.togglePlayPause(),
+  back: () => main && main.skip(-10),
+  forward: () => main && main.skip(10),
+  mute: () => main && main.toggleMute(),
+  ad: () => main && main.toggleManualAd(),
+  lock: () => main && main.mini.isOpen && main.mini.setLocked(!main.mini.locked),
+  hide: () => main && (main.mini.isOpen ? main.mini.toggleHidden() : main.enterMini()),
+  louder: () => main && main.nudgeMusicVolume(0.1),
+  quieter: () => main && main.nudgeMusicVolume(-0.1),
+};
 
-function registerShortcuts() {
-  for (const shortcut of SHORTCUTS) {
-    if (!globalShortcut.register(`Control+Alt+Command+${shortcut.key}`, () => main && shortcut.run())) {
-      unavailableShortcuts.add(shortcut.key);
-    }
+/** New keys: the menus and the app's own windows show them. */
+function sendShortcuts() {
+  Menu.setApplicationMenu(buildMenu());
+  const labels = shortcuts.labels();
+  for (const contents of webContents.getAllWebContents()) {
+    if (contents.getURL().startsWith("file:")) contents.send("shortcuts", labels);
   }
 }
 
@@ -306,6 +307,8 @@ function openSettings() {
   settingsWindow.loadFile(path.join(__dirname, "..", "renderer", "settings.html"));
   settingsWindow.on("closed", () => {
     settingsWindow = null;
+    // Closed while a shortcut was being typed: the shortcuts work again.
+    shortcuts.register();
   });
 }
 
@@ -352,15 +355,15 @@ function buildMenu() {
     {
       label: t("Playback"),
       submenu: [
-        { label: t("Play / Pause"), accelerator: "Control+Alt+Command+P", registerAccelerator: false, click: () => main.togglePlayPause() },
-        { label: t("Back 10 Seconds"), accelerator: "Control+Alt+Command+J", registerAccelerator: false, click: () => main.skip(-10) },
-        { label: t("Forward 10 Seconds"), accelerator: "Control+Alt+Command+L", registerAccelerator: false, click: () => main.skip(10) },
-        { label: t("Mute / Unmute"), accelerator: "Control+Alt+Command+M", registerAccelerator: false, click: () => main.toggleMute() },
-        { label: t("This Is an Ad"), accelerator: "Control+Alt+Command+A", registerAccelerator: false, click: () => main.toggleManualAd() },
+        { label: t("Play / Pause"), accelerator: shortcuts.accelerator("toggle") || undefined, registerAccelerator: false, click: () => main.togglePlayPause() },
+        { label: t("Back 10 Seconds"), accelerator: shortcuts.accelerator("back") || undefined, registerAccelerator: false, click: () => main.skip(-10) },
+        { label: t("Forward 10 Seconds"), accelerator: shortcuts.accelerator("forward") || undefined, registerAccelerator: false, click: () => main.skip(10) },
+        { label: t("Mute / Unmute"), accelerator: shortcuts.accelerator("mute") || undefined, registerAccelerator: false, click: () => main.toggleMute() },
+        { label: t("This Is an Ad"), accelerator: shortcuts.accelerator("ad") || undefined, registerAccelerator: false, click: () => main.toggleManualAd() },
         { type: "separator" },
         { label: t("Mini Player"), accelerator: "Shift+Cmd+M", click: () => main.toggleMini() },
-        { label: t("Show / Hide the Mini Player"), accelerator: "Control+Alt+Command+H", registerAccelerator: false, click: () => main.mini.toggleHidden() },
-        { label: t("Lock / Unlock the Mini Player"), accelerator: "Control+Alt+Command+T", registerAccelerator: false, click: () => main.mini.setLocked(!main.mini.locked) },
+        { label: t("Show / Hide the Mini Player"), accelerator: shortcuts.accelerator("hide") || undefined, registerAccelerator: false, click: () => main.mini.toggleHidden() },
+        { label: t("Lock / Unlock the Mini Player"), accelerator: shortcuts.accelerator("lock") || undefined, registerAccelerator: false, click: () => main.mini.setLocked(!main.mini.locked) },
         { label: t("Audio Only"), click: () => main.mini.setAudioOnly(!main.mini.audioOnly) },
       ],
     },
@@ -392,6 +395,7 @@ ipcMain.on("init", event => {
     icons: store.icons(),
     state: main ? main.state : { browsing: false },
     acceleration: acceleration(),
+    shortcuts: shortcuts.labels(),
   };
 });
 
@@ -482,10 +486,23 @@ ipcMain.on("cc:drag", (event, phase) => {
   if (main && main.mini.isOpen && main.page && event.sender === main.page.webContents) main.mini.drag(phase);
 });
 ipcMain.handle("settings:open", () => openSettings());
+// Choosing a shortcut in Settings: the others are off while the user types it.
+ipcMain.handle("shortcuts:pause", () => shortcuts.pause());
+ipcMain.handle("shortcuts:resume", () => shortcuts.register());
+ipcMain.handle("shortcuts:choose", (_event, id, key) => {
+  const taken = shortcuts.choose(id, key);
+  sendShortcuts();
+  return { taken: taken && t(taken), shortcuts: shortcuts.list(t) };
+});
+ipcMain.handle("shortcuts:reset", () => {
+  shortcuts.reset();
+  sendShortcuts();
+  return { shortcuts: shortcuts.list(t) };
+});
 ipcMain.handle("settings:get", () => ({
   settings: store.settings(),
   acceleration: acceleration(),
-  shortcuts: SHORTCUTS.map(({ key, label, title }) => ({ key: label || key, title: t(title), unavailable: unavailableShortcuts.has(key) })),
+  shortcuts: shortcuts.list(t),
 }));
 
 ipcMain.handle("settings:set", (_event, changes) => {

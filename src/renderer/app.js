@@ -6,6 +6,9 @@ const icon = window.CCIcons;
 const urls = window.CCUrls;
 
 let state = cc.init.state;
+/** The keys of the shortcuts from any app, chosen in Settings. */
+let keys = cc.init.shortcuts || {};
+const withKey = (text, id) => (keys[id] ? `${text} (${keys[id]})` : text);
 let services = cc.init.services;
 let icons = cc.init.icons;
 let acceleration = cc.init.acceleration;
@@ -64,7 +67,7 @@ function renderToolbar() {
     displayLinkNotice(),
     state.ad ? el("div", { class: "ad-badge" }, adBadgeText()) : null,
     toolButton(state.manualAd ? "megaphoneOn" : "megaphone",
-      state.manualAd ? t("End of the ad: sound back on (⌃⌥⌘A)") : t("This is an ad: mute it (⌃⌥⌘A)"),
+      withKey(state.manualAd ? t("End of the ad: sound back on") : t("This is an ad: mute it"), "ad"),
       () => cc.player("ad")),
     toolButton("pip", t("Mini Player (⇧⌘M)"), () => cc.player("mini"),
       { disabled: !(state.video && state.video.has) && !state.mini, text: true }),
@@ -162,7 +165,7 @@ function howItWorks() {
     t("Open it and sign in once: Corner Cinema remembers it."),
     t("Start a film, then click Mini Player, or simply switch to another app: the video stays on top, in a corner."),
     t("Drag the mini player from anywhere to move it. Escape brings the video back to the window; right-click for its options."),
-    t("Ads play without sound; the sound comes back with the film. If an ad slips through, click the megaphone (⌃⌥⌘A)."),
+    withKey(t("Ads play without sound; the sound comes back with the film. If an ad slips through, click the megaphone"), "ad") + ".",
   ];
   return el("section", { class: "steps" },
     el("h3", {}, t("How it works")),
@@ -245,6 +248,10 @@ cc.on("state", value => {
 cc.on("services", value => {
   services = value.services;
   icons = value.icons;
+  render();
+});
+cc.on("shortcuts", value => {
+  keys = value;
   render();
 });
 cc.on("acceleration", value => {

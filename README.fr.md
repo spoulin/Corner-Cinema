@@ -111,7 +111,11 @@ revient.
 | C'est une pub (son coupé jusqu'au prochain appui) | ⌃⌥⌘A |
 | Verrouiller / déverrouiller le mini lecteur | ⌃⌥⌘T |
 | Afficher / masquer le mini lecteur | ⌃⌥⌘H |
-| Musique pendant les pubs : plus fort / moins fort | ⌃⌥⌘↑ / ⌃⌥⌘↓ |
+| Musique pendant les pubs : plus fort / moins fort | ⌃⌥⌘= / ⌃⌥⌘- |
+
+Ce sont les raccourcis par défaut.
+Dans Réglages, cliquez sur un raccourci pour le changer ou l'enlever.
+Si un raccourci entre en conflit avec une autre app (un gestionnaire de fenêtres, par exemple), choisissez-en un autre.
 
 ## DisplayLink
 

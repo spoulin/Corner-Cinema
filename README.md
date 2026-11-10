@@ -103,7 +103,11 @@ Browsing YouTube (home, search, channels) stays the normal site; ⌘[ goes back 
 | This is an ad (mute until pressed again) | ⌃⌥⌘A |
 | Lock / unlock the mini player | ⌃⌥⌘T |
 | Show / hide the mini player | ⌃⌥⌘H |
-| Music during ads: louder / quieter | ⌃⌥⌘↑ / ⌃⌥⌘↓ |
+| Music during ads: louder / quieter | ⌃⌥⌘= / ⌃⌥⌘- |
+
+These are the default shortcuts.
+In Settings, click a shortcut to change or remove it.
+If a shortcut clashes with another app (a window manager, for example), choose another one.
 
 ## DisplayLink
 

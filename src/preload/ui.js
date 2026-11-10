@@ -3,7 +3,7 @@
 const { contextBridge, ipcRenderer } = require("electron");
 
 const init = ipcRenderer.sendSync("init");
-const channels = ["state", "services", "edit-service", "acceleration", "mini-state"];
+const channels = ["state", "services", "edit-service", "acceleration", "mini-state", "shortcuts"];
 
 contextBridge.exposeInMainWorld("cc", {
   init,
@@ -19,6 +19,11 @@ contextBridge.exposeInMainWorld("cc", {
   openSettings: () => ipcRenderer.invoke("settings:open"),
   getSettings: () => ipcRenderer.invoke("settings:get"),
   setSettings: changes => ipcRenderer.invoke("settings:set", changes),
+  /** Choosing shortcuts in Settings. */
+  pauseShortcuts: () => ipcRenderer.invoke("shortcuts:pause"),
+  resumeShortcuts: () => ipcRenderer.invoke("shortcuts:resume"),
+  chooseShortcut: (id, key) => ipcRenderer.invoke("shortcuts:choose", id, key),
+  resetShortcuts: () => ipcRenderer.invoke("shortcuts:reset"),
   /** Video and mini player commands: toggle, back, forward, seek, mute, mini, menu, drag, close. */
   player: (action, value) => ipcRenderer.invoke("player", action, value),
   relaunch: () => ipcRenderer.invoke("relaunch"),

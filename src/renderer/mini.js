@@ -59,8 +59,14 @@ const video = button(() => cc.player("audio", false));
 const close = button(() => cc.player("close"));
 controls.append(play, title, back, forward, mute, more, video, close);
 bar.append(controls);
-back.show("back", t("Back 10 seconds (⌃⌥⌘J)"));
-forward.show("forward", t("Forward 10 seconds (⌃⌥⌘L)"));
+/** The keys of the shortcuts from any app, chosen in Settings. */
+let keys = cc.init.shortcuts || {};
+const withKey = (text, id) => (keys[id] ? `${text} (${keys[id]})` : text);
+const showSkips = () => {
+  back.show("back", withKey(t("Back 10 seconds"), "back"));
+  forward.show("forward", withKey(t("Forward 10 seconds"), "forward"));
+};
+showSkips();
 more.show("more", t("Options"));
 video.show("video", t("Show the video"));
 close.show("close", t("Close (pauses the video)"));
@@ -93,8 +99,8 @@ function render(value) {
   state = value;
   const { video: current, audioOnly, muted } = state;
   document.body.classList.toggle("audio", audioOnly);
-  play.show(current.p ? "pause" : "play", t("Play / Pause (⌃⌥⌘P)"));
-  mute.show(muted ? "muted" : "sound", muted ? t("Unmute (⌃⌥⌘M)") : t("Mute (⌃⌥⌘M)"));
+  play.show(current.p ? "pause" : "play", withKey(t("Play / Pause"), "toggle"));
+  mute.show(muted ? "muted" : "sound", withKey(muted ? t("Unmute") : t("Mute"), "mute"));
   titleText.textContent = current.title || "";
   titleTime.hidden = !current.d;
   titleTime.textContent = current.d ? `${time(current.t)} / ${time(current.d)}` : "";
@@ -116,3 +122,8 @@ for (const type of ["pointerup", "pointercancel", "lostpointercapture"]) {
 }
 
 cc.on("mini-state", render);
+cc.on("shortcuts", value => {
+  keys = value;
+  showSkips();
+  if (state) render(state);
+});

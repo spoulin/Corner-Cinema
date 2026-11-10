@@ -17,6 +17,99 @@ function el(tag, attributes = {}, ...children) {
 
 let shortcuts = [];
 
+// MARK: Shortcuts
+
+/** The key a keyboard event names, in Electron's words (by position, whatever the layout). */
+function keyName(event) {
+  const { code } = event;
+  if (/^Key[A-Z]$/.test(code)) return code.slice(3);
+  if (/^Digit\d$/.test(code)) return code.slice(5);
+  if (/^F\d{1,2}$/.test(code)) return code;
+  const named = {
+    Equal: "=", Minus: "-", BracketLeft: "[", BracketRight: "]", Semicolon: ";", Quote: "'", Comma: ",",
+    Period: ".", Slash: "/", Backslash: "\\", Backquote: "`", ArrowUp: "Up", ArrowDown: "Down",
+    ArrowLeft: "Left", ArrowRight: "Right", Space: "Space", Enter: "Return", Tab: "Tab",
+    Home: "Home", End: "End", PageUp: "PageUp", PageDown: "PageDown",
+  };
+  return named[code] || null;
+}
+
+/** "Control+Alt+Command+P" from a key press, or null while only modifiers are down. */
+function accelerator(event) {
+  const key = keyName(event);
+  if (!key) return null;
+  return [event.ctrlKey && "Control", event.altKey && "Alt", event.shiftKey && "Shift", event.metaKey && "Command", key]
+    .filter(Boolean).join("+");
+}
+
+let recording = null;
+let shortcutMessage = "";
+
+/** A click on a shortcut: the next keys pressed become its shortcut. */
+function record(id) {
+  recording = id;
+  shortcutMessage = "";
+  cc.pauseShortcuts();
+  renderShortcuts();
+}
+
+async function stopRecording(id, key) {
+  recording = null;
+  if (id && key !== undefined) {
+    const { taken, shortcuts: list } = await cc.chooseShortcut(id, key);
+    shortcuts = list;
+    shortcutMessage = taken ? t("“%s” had these keys: it has no shortcut now.", taken) : "";
+  } else {
+    await cc.resumeShortcuts();
+  }
+  renderShortcuts();
+}
+
+document.addEventListener("keydown", event => {
+  if (!recording) return;
+  event.preventDefault();
+  event.stopPropagation();
+  if (event.key === "Escape" && !event.ctrlKey && !event.altKey && !event.metaKey) return stopRecording();
+  if ((event.key === "Backspace" || event.key === "Delete") && !event.ctrlKey && !event.altKey && !event.metaKey) return stopRecording(recording, "");
+  const key = accelerator(event);
+  if (!key) return;
+  // A shortcut from any app needs ⌘, ⌃ or ⌥: a plain key would stop working for typing everywhere.
+  if (!event.metaKey && !event.ctrlKey && !event.altKey && !/^F\d/.test(keyName(event))) {
+    shortcutMessage = t("Add ⌘, ⌃ or ⌥ to the key.");
+    return renderShortcuts();
+  }
+  stopRecording(recording, key);
+}, true);
+
+function shortcutsSection() {
+  const section = el("section", { id: "shortcuts" },
+    el("h2", {}, t("Shortcuts from any app")),
+    shortcuts.map(shortcut => el("div", { class: "row shortcut" },
+      el("span", {}, shortcut.title),
+      el("button", {
+        class: ["key-button", recording === shortcut.id && "recording", shortcut.unavailable && "unavailable"].filter(Boolean).join(" "),
+        title: shortcut.unavailable ? t("Another app already uses this shortcut") : t("Click, then press the new keys"),
+        onclick: () => (recording === shortcut.id ? stopRecording() : record(shortcut.id)),
+      }, recording === shortcut.id ? t("Press the keys…") : shortcut.label || t("None")))),
+    el("p", { class: "caption" }, recording
+      ? t("Escape cancels. Delete leaves this action without a shortcut.")
+      : t("Click a shortcut to change it. Some apps, such as window managers, catch keys without macOS knowing: if a shortcut also does something else, choose another one.")),
+    shortcutMessage ? el("p", { class: "status" }, shortcutMessage) : null,
+    el("div", { class: "restart" }, el("button", {
+      onclick: async () => {
+        shortcuts = (await cc.resetShortcuts()).shortcuts;
+        shortcutMessage = "";
+        renderShortcuts();
+      },
+    }, t("Restore the Default Shortcuts"))));
+  return section;
+}
+
+function renderShortcuts() {
+  const current = document.getElementById("shortcuts");
+  if (current) current.replaceWith(shortcutsSection());
+}
+
 /** Music during ads: a radio, a stream, a file or a folder, with its volume and fades. */
 function fillerSection(settings) {
   const source = el("input", {
@@ -59,7 +152,7 @@ function fillerSection(settings) {
       }, t("Listen"))),
     el("p", { class: "caption" }, t("While an ad plays without sound, this plays instead: a radio (a .pls or .m3u link, or its stream address), an audio file or a folder of music. Leave it empty for silence.")),
     el("div", { class: "row" }, el("span", {}, t("Volume of the music")), el("span", { class: "slider" }, volume, volumeLabel)),
-    el("p", { class: "caption" }, t("Also from any app: ⌃⌥⌘↑ / ⌃⌥⌘↓, or the mini player's options while it plays.")),
+    el("p", { class: "caption" }, t("Also with the shortcuts below, from any app, or the mini player's options while it plays.")),
     el("div", { class: "row" }, el("span", {}, t("Fades (music, and the film coming back)")), fade));
 }
 
@@ -119,18 +212,13 @@ function render({ settings, acceleration, shortcuts: list }) {
       }, [[60, "1 min"], [120, "2 min"], [180, "3 min"], [210, "3 min 30"], [240, "4 min"], [300, "5 min"], [600, "10 min"],
         [0, t("Until pressed again")]].map(([value, label]) =>
         el("option", { value: String(value), selected: settings.manualAdSeconds === value }, label)))),
-      el("p", { class: "caption" }, t("The ad still plays, without sound, and the sound comes back with the video. Nothing is skipped or blocked. If an ad is not recognized, click the megaphone (⌃⌥⌘A)."))),
+      el("p", { class: "caption" }, t("The ad still plays, without sound, and the sound comes back with the video. Nothing is skipped or blocked. If an ad is not recognized, click the megaphone, or use its shortcut."))),
     fillerSection(settings),
     el("section", {},
       el("h2", {}, t("YouTube")),
       el("label", { class: "row" }, el("span", {}, t("Play YouTube videos in YouTube's privacy player")), checkbox("youtubePrivacyPlayer")),
       el("p", { class: "caption" }, t("YouTube's embeddable player, without tracking cookies and without the page around it. YouTube Premium isn't recognized there; turn this off to keep the normal page."))),
-    el("section", {},
-      el("h2", {}, t("Shortcuts from any app")),
-      shortcuts.map(shortcut => el("div", { class: "row shortcut" },
-        el("span", {}, shortcut.title),
-        el("span", { class: shortcut.unavailable ? "key unavailable" : "key", title: shortcut.unavailable ? t("Another app already uses this shortcut") : "" },
-          "⌃⌥⌘" + shortcut.key)))),
+    shortcutsSection(),
     el("section", {},
       el("h2", {}, t("Hardware acceleration")),
       el("div", { class: "row" }, el("span", {}, t("Video and drawing by the graphics chip")), choice),

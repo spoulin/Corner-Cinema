@@ -476,7 +476,7 @@ class MainWindow {
     fs.writeFileSync(file, `${previous}${lines.join("\n")}\n`);
   }
 
-  /** ⌃⌥⌘↑ / ↓: the music during ads, louder or quieter (shown in the mini player). */
+  /** ⌃⌥⌘= / -: the music during ads, louder or quieter (shown in the mini player). */
   nudgeMusicVolume(step) {
     if (!store.settings().adFillerSource) return;
     const level = this.filler.changeVolume(Number(store.settings().adFillerVolume) + step);

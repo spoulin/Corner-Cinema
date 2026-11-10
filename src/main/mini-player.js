@@ -7,6 +7,7 @@
 const { app, BaseWindow, Menu, WebContentsView, screen } = require("electron");
 const path = require("path");
 const store = require("./store");
+const shortcuts = require("./shortcuts");
 const { t } = require("./i18n");
 
 const NOTICE_HEIGHT = 56;
@@ -242,7 +243,8 @@ class MiniPlayer {
     if (this.locked === on || !this.window) return;
     this.locked = on;
     this.window.setIgnoreMouseEvents(on);
-    this.flash(on ? t("Locked: clicks go through. ⌃⌥⌘T to unlock.") : t("Unlocked"));
+    const key = shortcuts.label("lock");
+    this.flash(on ? (key ? t("Locked: clicks go through. %s to unlock.", key) : t("Locked: clicks go through.")) : t("Unlocked"));
   }
 
   setAudioOnly(on) {
