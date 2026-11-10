@@ -113,6 +113,9 @@ const detectAd = () => {
     }
   }
   if ([...document.querySelectorAll(AD_CLASSES)].some(shown)) return true;
+  // An ad countdown the player marks as not hidden, even while its controls fade
+  // out (Pluto's skin goes transparent when the mouse isn't over the video).
+  if (document.querySelector("[class*='ad-countdown' i][aria-hidden='false']")) return true;
   // Google's video ad SDK (IMA) plays its ads in videos of their own, titled
   // "Advertisement" (Plex and many others): whether the player shows its ad label or not.
   if (videos().some(v => isPlaying(v) && /^advertisement$/i.test(v.title))) return true;
