@@ -2,6 +2,8 @@
 
 # Corner Cinema
 
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-support-FFDD00?logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/stephanepoulin)
+
 **English** · [Français](README.fr.md)
 
 A video player for macOS for people who watch films and series while they work.
@@ -198,3 +200,9 @@ Corner Cinema isn't affiliated with, or endorsed by, any streaming service. The 
 services in this document belong to their owners and only describe how the app behaves with
 them. Corner Cinema doesn't bypass any copy protection: protected videos play through
 Widevine, as in Chrome.
+
+## Support
+
+If Corner Cinema keeps your films in a corner while the ads keep quiet, you can buy me a coffee.
+
+<a href="https://buymeacoffee.com/stephanepoulin"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me a Coffee" height="40"></a>
