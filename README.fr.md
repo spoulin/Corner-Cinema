@@ -27,9 +27,14 @@ les regarde dans l'app.
 3. Ouvrez Corner Cinema depuis Applications. La première fois, macOS dit qu'il ne peut pas le
    vérifier, parce qu'il ne vient pas de l'App Store ni d'un développeur connu d'Apple. Cliquez
    sur **Terminé** (Done), pas sur Placer dans la corbeille.
+
+   <img src="Resources/install-not-opened.png" width="260" alt="macOS : Corner Cinema.app n'a pas été ouvert, avec Move to Trash et Done">
+
 4. Ouvrez **Réglages Système › Confidentialité et sécurité**, descendez jusqu'à **Sécurité**, et
    cliquez sur **Ouvrir quand même** à côté du message sur Corner Cinema. Confirmez avec votre mot
    de passe ou Touch ID, puis cliquez encore sur **Ouvrir quand même**.
+
+   <img src="Resources/install-open-anyway.png" width="440" alt="Réglages Système, Confidentialité et sécurité : Corner Cinema.app a été bloqué, Ouvrir quand même">
 
    Vous avez cliqué sur Placer dans la corbeille par erreur ? Ouvrez de nouveau
    `CornerCinema.dmg`, glissez Corner Cinema sur Applications et reprenez à l'étape 3.

@@ -26,9 +26,14 @@ You add the streaming services you subscribe to, sign in once, and watch them in
 3. Open Corner Cinema from Applications. The first time, macOS says it can't check it, because
    it doesn't come from the App Store or from a developer known to Apple. Click **Done**, not
    Move to Trash.
+
+   <img src="Resources/install-not-opened.png" width="260" alt="macOS: Corner Cinema.app Not Opened, with Move to Trash and Done">
+
 4. Open **System Settings › Privacy & Security**, scroll down to **Security**, and click
    **Open Anyway** next to the message about Corner Cinema. Confirm with your password or
    Touch ID, then click **Open Anyway** once more.
+
+   <img src="Resources/install-open-anyway.png" width="440" alt="System Settings, Privacy & Security: Corner Cinema.app was blocked to protect your Mac, Open Anyway">
 
    Clicked Move to Trash by mistake? Open `CornerCinema.dmg` again, drag Corner Cinema onto
    Applications, and start over at step 3.
