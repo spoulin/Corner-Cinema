@@ -1,7 +1,7 @@
 {
   "name": "corner-cinema",
   "productName": "Corner Cinema",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "description": "Films and series in a corner of the screen while you work.",
   "license": "MIT",
   "private": true,
