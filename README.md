@@ -6,6 +6,10 @@
 
 **English** · [Français](README.fr.md)
 
+[![Download Corner Cinema for macOS](https://img.shields.io/badge/Download-Corner%20Cinema%20for%20macOS-3A3D66?style=for-the-badge&logo=apple&logoColor=white)](https://github.com/spoulin/Corner-Cinema/releases/latest/download/CornerCinema.dmg)
+
+For macOS 14 or later, on Macs with Apple silicon. See [Install](#install).
+
 A video player for macOS for people who watch films and series while they work.
 You add the streaming services you subscribe to, sign in once, and watch them in the app.
 
@@ -14,12 +18,29 @@ You add the streaming services you subscribe to, sign in once, and watch them in
 
 ## Install
 
-There is no download yet: build and install the app with `npm run install-app` (see
-[Build](#build)). It goes to `/Applications`, where Spotlight, Raycast and the Launchpad find
-it. It runs on Macs with Apple silicon, macOS 14 or later.
+1. Click **Download** above to get `CornerCinema.dmg`, then open it.
+2. Drag Corner Cinema onto Applications.
 
-The app isn't signed by Apple. On a Mac other than the one that built it, macOS blocks the
-first launch: open *System Settings › Privacy & Security* and click *Open Anyway*.
+   <img src="Resources/install-dmg.png" width="440" alt="The Corner Cinema disk image: drag Corner Cinema onto Applications">
+
+3. Open Corner Cinema from Applications. The first time, macOS says it can't check it, because
+   it doesn't come from the App Store or from a developer known to Apple. Click **Done**, not
+   Move to Trash.
+4. Open **System Settings › Privacy & Security**, scroll down to **Security**, and click
+   **Open Anyway** next to the message about Corner Cinema. Confirm with your password or
+   Touch ID, then click **Open Anyway** once more.
+
+   Clicked Move to Trash by mistake? Open `CornerCinema.dmg` again, drag Corner Cinema onto
+   Applications, and start over at step 3.
+
+That's needed once only: afterwards, Corner Cinema opens like any other app. At first launch,
+it downloads the Widevine module from Google, which protected videos need.
+
+To update, choose **Corner Cinema › Check for Updates…**: it opens the page of the latest
+version. Download it and drag it onto Applications again, replacing the old one. Your services,
+settings and sign-ins stay: they aren't in the app.
+
+It runs on Macs with Apple silicon only. To build it yourself instead, see [Build](#build).
 
 ## Use
 
@@ -169,6 +190,20 @@ Then:
 
 People who download a built app need no account: the signature is in the app, and the
 Widevine module downloads from Google at first launch.
+
+### Releases
+
+Releases are made on the developer's Mac, not on GitHub Actions: the VMP signature needs the
+castLabs EVS account, which stays there. Set the new version in `package.json`, commit, then:
+
+```bash
+npm run release
+```
+
+It builds the app (VMP-signed, then signed ad hoc), makes `CornerCinema.dmg` with
+`tools/make-dmg.sh`, tags the commit `v<version>` and publishes a GitHub release with the disk
+image, which the Download link above always points to. `DRY_RUN=1 npm run release` only makes
+the disk image, to check it. It needs the GitHub CLI (`gh`), signed in.
 
 ## How it works
 

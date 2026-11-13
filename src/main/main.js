@@ -1,6 +1,6 @@
 // Corner Cinema: the user's streaming services in a window (and, next, in a
 // floating mini player). Chromium with Widevine (castLabs Electron).
-const { app, components, dialog, globalShortcut, ipcMain, BrowserWindow, Menu, Tray, screen, session, webContents } = require("electron");
+const { app, components, dialog, globalShortcut, ipcMain, BrowserWindow, Menu, Tray, screen, session, shell, webContents } = require("electron");
 const shortcuts = require("./shortcuts");
 const path = require("path");
 const store = require("./store");
@@ -319,6 +319,11 @@ function buildMenu() {
       label: app.name,
       submenu: [
         { role: "about", label: t("About Corner Cinema") },
+        // New versions are GitHub releases; About shows the version this one is.
+        {
+          label: t("Check for Updates…"),
+          click: () => shell.openExternal("https://github.com/spoulin/Corner-Cinema/releases/latest"),
+        },
         { type: "separator" },
         { label: t("Settings…"), accelerator: "Cmd+,", click: openSettings },
         { type: "separator" },

@@ -6,6 +6,10 @@
 
 [English](README.md) · **Français**
 
+[![Télécharger Corner Cinema pour macOS](https://img.shields.io/badge/T%C3%A9l%C3%A9charger-Corner%20Cinema%20pour%20macOS-3A3D66?style=for-the-badge&logo=apple&logoColor=white)](https://github.com/spoulin/Corner-Cinema/releases/latest/download/CornerCinema.dmg)
+
+Pour macOS 14 ou plus récent, sur les Mac avec puce Apple. Voir [Installer](#installer).
+
 Lecteur vidéo pour macOS, pour ceux qui écoutent des films et des séries en travaillant.
 On ajoute les services de streaming auxquels on est abonné, on s'y connecte une fois, et on
 les regarde dans l'app.
@@ -15,14 +19,30 @@ les regarde dans l'app.
 
 ## Installer
 
-Il n'y a pas encore de téléchargement : construisez et installez l'app avec
-`npm run install-app` (voir [Construire](#construire)). Elle va dans `/Applications`, où
-Spotlight, Raycast et le Launchpad la trouvent. Elle fonctionne sur les Mac avec puce Apple,
-macOS 14 ou plus récent.
+1. Cliquez sur **Télécharger** ci-dessus pour obtenir `CornerCinema.dmg`, puis ouvrez-le.
+2. Glissez Corner Cinema sur Applications.
 
-L'app n'est pas signée par Apple. Sur un autre Mac que celui qui l'a construite, macOS
-bloque le premier lancement : ouvrez *Réglages Système › Confidentialité et sécurité* et
-cliquez *Ouvrir quand même*.
+   <img src="Resources/install-dmg.png" width="440" alt="L'image disque de Corner Cinema : glisser Corner Cinema sur Applications">
+
+3. Ouvrez Corner Cinema depuis Applications. La première fois, macOS dit qu'il ne peut pas le
+   vérifier, parce qu'il ne vient pas de l'App Store ni d'un développeur connu d'Apple. Cliquez
+   sur **Terminé** (Done), pas sur Placer dans la corbeille.
+4. Ouvrez **Réglages Système › Confidentialité et sécurité**, descendez jusqu'à **Sécurité**, et
+   cliquez sur **Ouvrir quand même** à côté du message sur Corner Cinema. Confirmez avec votre mot
+   de passe ou Touch ID, puis cliquez encore sur **Ouvrir quand même**.
+
+   Vous avez cliqué sur Placer dans la corbeille par erreur ? Ouvrez de nouveau
+   `CornerCinema.dmg`, glissez Corner Cinema sur Applications et reprenez à l'étape 3.
+
+Il ne faut le faire qu'une fois : ensuite, Corner Cinema s'ouvre comme n'importe quelle app. Au
+premier lancement, elle télécharge chez Google le module Widevine, nécessaire aux vidéos protégées.
+
+Pour mettre à jour, choisissez **Corner Cinema › Rechercher des mises à jour…** : la page de la
+dernière version s'ouvre. Téléchargez-la et glissez-la de nouveau sur Applications, en remplaçant
+l'ancienne. Vos services, réglages et connexions restent : ils ne sont pas dans l'app.
+
+Elle fonctionne seulement sur les Mac avec puce Apple. Pour la construire vous-même, voir
+[Construire](#construire).
 
 ## Utilisation
 
@@ -178,6 +198,21 @@ Ensuite :
 
 Les gens qui téléchargent une app construite n'ont besoin d'aucun compte : la signature est
 dans l'app, et le module Widevine se télécharge depuis Google au premier lancement.
+
+### Versions publiées
+
+Les versions se publient depuis le Mac du développeur, pas sur GitHub Actions : la signature VMP
+demande le compte castLabs EVS, qui reste là. Mettez la nouvelle version dans `package.json`,
+commitez, puis :
+
+```bash
+npm run release
+```
+
+La commande construit l'app (signée VMP, puis signée ad hoc), fabrique `CornerCinema.dmg` avec
+`tools/make-dmg.sh`, tague le commit `v<version>` et publie une release GitHub avec l'image
+disque, vers laquelle pointe toujours le lien Télécharger ci-dessus. `DRY_RUN=1 npm run release`
+fabrique seulement l'image disque, pour la vérifier. Il faut le CLI de GitHub (`gh`), connecté.
 
 ## Fonctionnement
 

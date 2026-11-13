@@ -12,7 +12,8 @@
     "evs:sign-dev": "node scripts/evs.js dev",
     "app": "electron-builder --mac --dir",
     "install-app": "electron-builder --mac --dir && node scripts/install-app.js",
-    "dist": "electron-builder --mac dmg zip"
+    "dist": "electron-builder --mac dmg zip",
+    "release": "scripts/release.sh"
   },
   "devDependencies": {
     "electron": "github:castlabs/electron-releases#v44.9.3+wvcus",
