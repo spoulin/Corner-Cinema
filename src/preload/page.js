@@ -1,9 +1,11 @@
 // Runs in every service page and in each of its frames, in an isolated world
 // the site can't see or call. Nothing is exposed to the page.
 // - Every frame: spots ads and tells the app, which mutes the page meanwhile.
+// - Every frame, in the mini player: moves the player when dragged, and
+//   brings the video back to the window on Escape.
 // - Top frame: finds, reports and drives the main video; in the mini player,
-//   marks the site's player (focus.css, added by the app, shows it alone) and
-//   moves the player when dragged; sends YouTube videos to the privacy player.
+//   marks the site's player (focus.css, added by the app, shows it alone);
+//   sends YouTube videos to the privacy player.
 const { ipcRenderer, webFrame } = require("electron");
 
 const isTop = window === window.top;
@@ -231,7 +233,7 @@ if (isTop) {
   }, true);
 }
 
-// MARK: Mini player (top frame)
+// MARK: Mini player (the drag and Escape in every frame, the rest in the top frame)
 
 let mini = false;
 let focusedAt = 0;
@@ -291,7 +293,16 @@ const endDrag = event => {
   if (event) event.stopImmediatePropagation();
 };
 
-if (isTop) {
+// Every frame: in YouTube's privacy player the video is in YouTube's frame, and
+// the top frame never sees the pointer or the keys there.
+if (!isTop) {
+  ipcRenderer.on("cc:mini", (_event, on) => {
+    mini = !!on;
+    if (!mini) endDrag();
+  });
+}
+
+{
   window.addEventListener("pointerdown", event => {
     press = null;
     if (!mini || !event.isTrusted || event.button !== 0) return;

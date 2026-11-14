@@ -569,6 +569,15 @@ class MainWindow {
     const contents = this.page && this.page.webContents;
     if (!contents) return;
     this.run("mini", on);
+    // The other frames too: a drag or Escape can start in them (YouTube's player).
+    for (const frame of contents.mainFrame.framesInSubtree) {
+      if (frame === contents.mainFrame) continue;
+      try {
+        frame.send("cc:mini", on);
+      } catch {
+        // The frame went away.
+      }
+    }
     if (this.focusCSS) {
       contents.removeInsertedCSS(this.focusCSS).catch(() => {});
       this.focusCSS = null;
